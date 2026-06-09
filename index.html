@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MATPREP · 8周在家自主训练</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d100c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MATPREP">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@1,700&family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -55,6 +63,14 @@
     cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
   .bnav a svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
   .bnav a.on{color:var(--orange)}
+
+  /* The Self 分享区 */
+  .share-big{width:100%;background:var(--orange);color:#1d100c;border:0;border-radius:11px;
+    padding:15px;font-size:15px;font-weight:700;cursor:pointer}
+  .share-hint{color:var(--mut);font-size:12px;text-align:center;margin-top:10px;line-height:1.5}
+  .share-reset{width:100%;margin-top:16px;background:transparent;border:1px solid var(--line);
+    color:var(--mut2);border-radius:10px;padding:11px;font-size:13px;cursor:pointer}
+  .share-reset:hover{border-color:var(--orange);color:var(--orange-soft)}
   .mono{font-family:var(--mono);letter-spacing:.02em}
   .mut{color:var(--mut)}
 
@@ -445,6 +461,13 @@
   </div>
 
   <!-- 精神内核 -->
+  <h2 class="sec" data-tab="self">分享 · 设置</h2>
+  <div class="card">
+    <button class="share-big" onclick="shareApp()">📤 分享给朋友</button>
+    <div class="share-hint">朋友打开链接即可用 · 各自进度独立，互不影响</div>
+    <button class="share-reset" onclick="resetAll()">清空所有进度</button>
+  </div>
+
   <h2 class="sec foldable" data-tab="self" data-fk="spirit">精神内核 · 它究竟是什么</h2>
   <div class="spirit" id="spirit"></div>
   </div><!-- /viewTrain -->
