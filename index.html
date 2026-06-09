@@ -4,32 +4,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MATPREP · 8周在家自主训练</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@1,700&family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#15181500;            /* set on body */
-    --ink:#e9e7e0;
-    --mut:#7f867b;
-    --mut2:#9aa094;
-    --card:#1f231e;
-    --card2:#252a23;
-    --line:#2d322b;
-    --orange:#e0592c;
-    --orange-soft:#e8763f;
+    --bg:#1d100c;
+    --ink:#f7ddd5;
+    --mut:#b7a59d;
+    --mut2:#8a7a72;
+    --card:#251611;
+    --card2:#2e1c15;
+    --line:#41312c;
+    --orange:#ff6b35;
+    --orange-soft:#ff8a3d;
     --amber:#d9a441;
     --good:#6f9a5e;
-    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Archivo Narrow',sans-serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
-    background:#16190f00;
-    background-color:#161a14;
+    background-color:#1d100c;
     color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Segoe UI",sans-serif;
+    font-family:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Segoe UI",sans-serif;
     -webkit-font-smoothing:antialiased;
     line-height:1.6;
   }
-  .wrap{max-width:480px;margin:0 auto;padding:22px 18px 80px}
+  .wrap{max-width:480px;margin:0 auto;padding:18px 18px 96px}
+
+  /* HERO（v1 Kinetic：左橙线 + mono 标签 + 缩小拉丁大标题 + 中文副标）*/
+  .hero{position:relative;padding:14px 0 18px 18px;margin:6px 0 4px}
+  .hero::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:3px;
+    background:linear-gradient(180deg,var(--orange),transparent)}
+  .hero-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--orange);text-transform:uppercase}
+  .hero-h{font-family:var(--disp);font-style:italic;font-weight:700;font-size:34px;line-height:.96;color:var(--ink);margin-top:7px}
+  .hero-zh{font-size:12.5px;color:var(--mut);margin-top:7px;line-height:1.5}
+
+  /* 区块标题：中文友好的小标题 + 左橙点 */
+  h2.sec{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.02em;position:relative;padding-left:12px}
+  h2.sec::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:14px;background:var(--orange);border-radius:1px}
+  h2.sec .hint{font-weight:400}
+
+  /* 底部 4-tab 导航 */
+  .bnav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;
+    background:rgba(29,16,12,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);padding:8px 6px max(8px,env(safe-area-inset-bottom))}
+  .bnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--mut2);
+    cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+  .bnav a svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .bnav a.on{color:var(--orange)}
   .mono{font-family:var(--mono);letter-spacing:.02em}
   .mut{color:var(--mut)}
 
@@ -45,7 +70,7 @@
   /* progress bar */
   .prog{margin:18px 0 6px;display:flex;align-items:center;gap:10px}
   .bars{flex:1;display:flex;gap:3px}
-  .seg{height:18px;flex:1;background:#2a2f27;border-radius:2px}
+  .seg{height:18px;flex:1;background:#2e1c15;border-radius:2px}
   .seg.on{background:var(--orange)}
   .prog-num{text-align:right;min-width:54px}
   .prog-num .pct{font-weight:800;font-size:15px}
@@ -59,7 +84,7 @@
   .weeks::-webkit-scrollbar{display:none}
   .weeks-fade{position:absolute;right:0;top:0;height:42px;width:48px;display:flex;align-items:center;
     justify-content:flex-end;padding-right:5px;color:var(--orange-soft);font-size:26px;font-weight:800;
-    cursor:pointer;transition:opacity .2s;background:linear-gradient(90deg,transparent,#161a14 62%)}
+    cursor:pointer;transition:opacity .2s;background:linear-gradient(90deg,transparent,#1d100c 62%)}
   .wk{min-width:42px;height:42px;border-radius:10px;background:var(--card);border:1px solid var(--line);
     color:var(--mut2);font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
   .wk.active{background:var(--orange);color:#fff;border-color:var(--orange)}
@@ -106,12 +131,12 @@
   .day .dl{display:flex;align-items:center;gap:10px}
   .day .dn{font-weight:800;font-size:17px}
   .tag{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
-  .tag.two{background:#2e2419;color:#d99a55}
-  .tag.one{background:#1f2a31;color:#5fa3c4}
+  .tag.two{background:#3a241a;color:#d99a55}
+  .tag.one{background:#2e1c15;color:#ff8a3d}
   .tag.rest{background:#262a23;color:var(--mut)}
   .day .df{color:var(--mut);font-family:var(--mono);font-size:13px;cursor:pointer}
   .day .dr{display:flex;align-items:center;gap:8px;padding-left:12px;border-left:1px solid var(--line)}
-  .day.fulldone{border-color:#3d5a2e;background:#18200f}
+  .day.fulldone{border-color:#5a3a1e;background:#2a1610}
   .dcheck{width:40px;height:40px;border-radius:9px;border:1.5px solid var(--line);background:var(--card2);
     color:var(--mut);font-size:17px;font-weight:800;cursor:pointer;flex:0 0 auto;line-height:1}
   .dcheck.on{background:var(--good);border-color:var(--good);color:#fff}
@@ -122,7 +147,7 @@
   .foldable.collapsed .hint{display:none}
   .fold-body[hidden]{display:none}
   /* 回到顶部 */
-  .totop{position:fixed;left:16px;bottom:20px;z-index:45;width:44px;height:44px;border-radius:50%;
+  .totop{position:fixed;left:16px;bottom:82px;z-index:45;width:44px;height:44px;border-radius:50%;
     background:var(--card2);border:1px solid var(--line);color:var(--ink);font-size:20px;cursor:pointer;
     opacity:0;pointer-events:none;transition:opacity .2s;box-shadow:0 4px 16px rgba(0,0,0,.45)}
   .totop.show{opacity:.92;pointer-events:auto}
@@ -160,7 +185,7 @@
   .heat{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
   .heat-row{display:flex;align-items:center;gap:3px}
   .heat-row .hw{font-family:var(--mono);font-size:9px;color:var(--mut);width:20px;flex:0 0 auto}
-  .heat-row .cell{flex:1;height:11px;border-radius:2px;background:#2a2f27}
+  .heat-row .cell{flex:1;height:11px;border-radius:2px;background:#2e1c15}
   .heat-row .cell.on{background:var(--orange)}
 
   /* topbar 按钮组 + tab */
@@ -176,7 +201,7 @@
   .animal:first-child{margin-top:0}
   .ahead{display:flex;align-items:center;gap:11px}
   .aemoji{font-size:24px;flex:0 0 auto}
-  .cidx{width:26px;height:26px;border-radius:7px;background:#2a2f27;color:var(--orange-soft);
+  .cidx{width:26px;height:26px;border-radius:7px;background:#2e1c15;color:var(--orange-soft);
     font-family:var(--mono);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
   .ameta{flex:1;min-width:0}
   .afocus{color:var(--mut);font-size:12.5px;margin-top:7px;padding-left:35px}
@@ -225,7 +250,7 @@
   ol.steps{margin:6px 0 0;padding:0;list-style:none;counter-reset:s}
   ol.steps li{display:flex;gap:10px;padding:5px 0;font-size:14px}
   ol.steps li .n{counter-increment:s;flex:0 0 auto;width:18px;height:18px;border-radius:5px;
-    background:#2a2f27;color:var(--orange-soft);font-family:var(--mono);font-size:11px;font-weight:700;
+    background:#2e1c15;color:var(--orange-soft);font-family:var(--mono);font-size:11px;font-weight:700;
     display:flex;align-items:center;justify-content:center;margin-top:2px}
   ol.steps li .n::before{content:counter(s)}
   .vbtn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;color:var(--orange-soft);
@@ -251,7 +276,7 @@
   .spirit{color:var(--mut);font-size:12.5px;line-height:1.7;margin-top:14px}
 
   /* sticky train button */
-  .train-cta{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:40;
+  .train-cta{position:fixed;left:50%;transform:translateX(-50%);bottom:80px;z-index:40;
     background:var(--orange);color:#fff;border:0;border-radius:30px;padding:14px 28px;font-size:15px;
     font-weight:700;box-shadow:0 8px 30px rgba(224,89,44,.4);cursor:pointer;display:flex;align-items:center;gap:8px}
   .train-cta:active{transform:translateX(-50%) scale(.97)}
@@ -314,40 +339,46 @@
     </div>
   </div>
 
-  <div class="tabbar">
-    <button class="tab on" id="tabTrain" onclick="switchView('train')">训练</button>
-    <button class="tab" id="tabLog" onclick="switchView('log')">记录</button>
+  <div class="hero" id="hero">
+    <div class="hero-lbl" id="heroLbl">LIVE // TRAINING</div>
+    <div class="hero-h" id="heroH">PRECISION<br>FUNDAMENTALS</div>
+    <div class="hero-zh" id="heroZh">在家自主训练 · 不替代道馆</div>
   </div>
 
-  <div id="viewTrain">
-  <div class="intro" id="intro" hidden>
+  <div id="v-path" class="view"></div>
+  <div id="v-scroll" class="view" hidden></div>
+  <div id="v-journey" class="view" hidden></div>
+  <div id="v-self" class="view" hidden></div>
+
+  <div id="viewTrain" hidden>
+  <div class="intro" id="intro" data-tab="path" hidden>
     <div class="intro-txt"><b>上垫前的准备工具</b> — 不替代道馆，招式实战要教练在场学。零基础从这开始 ↓</div>
     <button class="intro-cta" onclick="startToday()">▶ 开始今天的训练</button>
     <div class="intro-sub">不会做？每个动作有图鉴 + 视频。开练前先扫一眼底部「5 条安全红线」。</div>
     <button class="intro-x" onclick="dismissIntro()">知道了，收起 ✕</button>
   </div>
-  <div class="prog">
+  <div class="prog" data-tab="path">
     <div class="bars" id="bars"></div>
     <div class="prog-num"><div class="pct" id="pct">0%</div><div class="frac" id="frac">0 / 0 练</div></div>
   </div>
 
-  <div class="phases">
+  <div class="phases" data-tab="path">
     <span><b>阶段一</b> · 唤醒 (W1–2)</span>
     <span><b>阶段二</b> · 加载 (W3–6)</span>
     <span><b>阶段三</b> · 模拟 (W7–8)</span>
   </div>
-  <div class="weeks-wrap">
+  <div class="weeks-wrap" data-tab="path">
     <div class="weeks" id="weeks" onscroll="updateWeeksFade()"></div>
     <div class="weeks-fade" id="weeksFade" onclick="$('weeks').scrollBy({left:170,behavior:'smooth'})">›</div>
   </div>
 
-  <div class="habit">
+  <div class="habit" data-tab="journey">
     <div class="streak" id="streak"></div>
     <div class="heat" id="heat"></div>
   </div>
 
   <!-- 练前自检 -->
-  <h2 class="sec">练前自检 · 今天能练吗 <span class="hint">开工先过一遍</span></h2>
+  <h2 class="sec" data-tab="path">练前自检 · 今天能练吗 <span class="hint">开工先过一遍</span></h2>
   <div class="card">
     <span class="reset" onclick="resetChecklist()">重置</span>
     <div id="checklist"></div>
@@ -357,7 +388,7 @@
   </div>
 
   <!-- 供能 -->
-  <h2 class="sec foldable" data-fk="fuel">供能 · 按体重算 <span class="hint">↑大强度=多吃，不是少吃</span></h2>
+  <h2 class="sec foldable" data-tab="self" data-fk="fuel">供能 · 按体重算 <span class="hint">↑大强度=多吃，不是少吃</span></h2>
   <div class="card">
     <div class="wt">体重 <input id="wt" type="number" min="35" max="160" value="65"> kg
       <span class="mut mono" style="margin-left:auto;font-size:12px">训练日目标 ↓</span></div>
@@ -367,14 +398,14 @@
       <div class="fuel"><div class="k">饮水基线</div><div class="v" id="fWater"></div></div>
       <div class="fuel"><div class="k">供能区间</div><div class="v" id="fKcal"></div></div>
     </div>
-    <div class="note" style="border-color:#33402a;background:#1b2415;color:var(--mut2)">
+    <div class="note" style="border-color:#4a2c1e;background:#241710;color:var(--mut2)">
       <b style="color:var(--ink)">原则：</b>这是"为训练供能"的区间，不是减脂目标。两练制下恢复优先级 = 睡眠 ≥ 碳水 ≥ 蛋白。
       觉得累了先加碳水和睡够，别加练。蛋白分 4 餐摄入，每餐 25–40g 吸收最好。
     </div>
   </div>
 
   <!-- 本周训练 -->
-  <h2 class="sec" id="weekTitle">本周训练</h2>
+  <h2 class="sec" data-tab="path" id="weekTitle">本周训练</h2>
   <div class="card" style="padding:14px 16px;border-color:#4a2c1e;background:#1c1410">
     <span style="color:var(--orange-soft);font-weight:700">第 <span id="curWeek">1</span> 周</span>
     <span class="mut" style="font-size:13px"> · 全程低强度，只求动作做对。每个动作慢做，有条件像自查姿势。</span>
@@ -382,39 +413,39 @@
   <div id="days"></div>
 
   <!-- 动作图鉴 -->
-  <h2 class="sec foldable" data-fk="moves">动作图鉴 · 图 + 视频 <span class="hint">不会先看这里 ↓</span></h2>
-  <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px">
+  <h2 class="sec foldable" data-tab="scroll" data-fk="moves">动作图鉴 · 图 + 视频 <span class="hint">不会先看这里 ↓</span></h2>
+  <div class="card" style="border-color:#4a2c1e;background:#241710;color:var(--mut2);padding:12px 16px;font-size:12.5px">
     简笔图看动作 <b style="color:var(--orange-soft)">方位</b>，按编号步骤练。动作是动态的，第一次务必"看示范视频"确认细节——别照着火柴人瞎练。
   </div>
   <div id="moves"></div>
 
   <!-- 体能 / 串联 -->
-  <h2 class="sec foldable" data-fk="cond">体能 · 串联日范本 <span class="hint">穿插在训练日</span></h2>
+  <h2 class="sec foldable" data-tab="scroll" data-fk="cond">体能 · 串联日范本 <span class="hint">穿插在训练日</span></h2>
   <div class="card" id="cond"></div>
 
   <!-- 动物爬行 -->
-  <h2 class="sec foldable" data-fk="animal">动物爬行 · 趣味移动 <span class="hint">热身/体能，非招式</span></h2>
-  <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
+  <h2 class="sec foldable" data-tab="scroll" data-fk="animal">动物爬行 · 趣味移动 <span class="hint">热身/体能，非招式</span></h2>
+  <div class="card" style="border-color:#4a2c1e;background:#241710;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
     枯燥练不下去时换这个。动物爬行是 BJJ 道馆常用热身——练地面移动、协调和体能，趣味高、受伤低。每个爬 1-2 趟（约 8-10 米）。
   </div>
   <div class="card" id="animals"></div>
 
   <!-- 核心稳定 / 护腰 -->
-  <h2 class="sec foldable" data-fk="core">核心稳定 · 护腰 <span class="hint">脊柱中立，腰友好</span></h2>
-  <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
+  <h2 class="sec foldable" data-tab="scroll" data-fk="core">核心稳定 · 护腰 <span class="hint">脊柱中立，腰友好</span></h2>
+  <div class="card" style="border-color:#4a2c1e;background:#241710;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
     这些是"练核心又护腰"的动作——全程脊柱保持中立、不反复弯腰扭腰，物理治疗常用。当热身或单独核心日，每个 30-40 秒 / 8-12 次。
   </div>
   <div class="card" id="core"></div>
 
   <!-- 注意事项 -->
-  <h2 class="sec">注意事项 · 必读补充</h2>
+  <h2 class="sec" data-tab="scroll">注意事项 · 必读补充</h2>
   <div class="safety">
     <div class="sh">⚠ 5 条安全红线 · 别跳过</div>
     <ol id="safetyList"></ol>
   </div>
 
   <!-- 精神内核 -->
-  <h2 class="sec foldable" data-fk="spirit">精神内核 · 它究竟是什么</h2>
+  <h2 class="sec foldable" data-tab="self" data-fk="spirit">精神内核 · 它究竟是什么</h2>
   <div class="spirit" id="spirit"></div>
   </div><!-- /viewTrain -->
 
@@ -461,6 +492,21 @@
 
 <!-- 打印卡 -->
 <div id="printRoot"></div>
+
+<nav class="bnav" id="bnav">
+  <a class="on" data-t="path" onclick="switchTab('path')">
+    <svg viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="4" height="4" rx="1"/><rect x="15.5" y="15.5" width="4" height="4" rx="1"/><path d="M7 9.5l10 5"/></svg>
+    The Path</a>
+  <a data-t="scroll" onclick="switchTab('scroll')">
+    <svg viewBox="0 0 24 24"><path d="M4 5a8 8 0 018 2 8 8 0 018-2v12a8 8 0 00-8 2 8 8 0 00-8-2z"/><path d="M12 7v12"/></svg>
+    The Scroll</a>
+  <a data-t="journey" onclick="switchTab('journey')">
+    <svg viewBox="0 0 24 24"><path d="M3 16l5-5 4 3 6-7"/><path d="M14 7h4v4"/></svg>
+    The Journey</a>
+  <a data-t="self" onclick="switchTab('self')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/></svg>
+    The Self</a>
+</nav>
 
 <script>
 /* ====== streak 纯函数（与 streak.test.mjs 同源，已 8/8 通过）====== */
@@ -691,7 +737,7 @@ function updateChkNote(){
   const unchecked=PLAN.checklist.filter((_,i)=>!S.chk[i]).length;
   const n=$('chkNote');
   if(unchecked===0 && S.state!==null){
-    n.style.borderColor='#33402a';n.style.background='#1b2415';n.style.color='var(--good)';
+    n.style.borderColor='#4a2c1e';n.style.background='#241710';n.style.color='var(--good)';
     n.innerHTML='✓ 全部确认。可以上垫了——记得先热身 5 分钟。';
   }else{
     n.style.borderColor='#4a3d22';n.style.background='#241f13';n.style.color='var(--amber)';
@@ -759,12 +805,27 @@ function renderSafety(){
 }
 
 /* ====== 视图切换 训练/记录 ====== */
-function switchView(v){
-  const train=v==='train';
-  $('viewTrain').hidden=!train; $('viewLog').hidden=train;
-  $('tabTrain').classList.toggle('on',train); $('tabLog').classList.toggle('on',!train);
-  const cta=document.querySelector('.train-cta'); if(cta)cta.style.display=train?'':'none';
-  if(!train) switchLog(S.curLog||'daily');
+/* ====== 4-tab 分发 + 切换 ====== */
+const HERO={
+  path:   {lbl:'LIVE // TRAINING',  h:'PRECISION<br>FUNDAMENTALS', zh:'在家自主训练 · 不替代道馆'},
+  scroll: {lbl:'THE SCROLL // 典籍', h:'THE<br>TECHNIQUES',         zh:'动作图鉴 · 体能 · 安全红线'},
+  journey:{lbl:'THE JOURNEY // 历程',h:'YOUR<br>JOURNEY',            zh:'连续天数 · 8 周热图 · 训练日志'},
+  self:   {lbl:'THE SELF // 己身',   h:'FUEL &<br>RECOVERY',         zh:'供能 · 身体状态 · 设置'},
+};
+function distributeTabs(){
+  const src=$('viewTrain'); let cur=null, group=[];
+  const flush=()=>{ if(cur&&group.length){ const c=$('v-'+cur); group.forEach(n=>c.appendChild(n)); } group=[]; };
+  [...src.children].forEach(n=>{ if(n.dataset&&n.dataset.tab){ flush(); cur=n.dataset.tab; } group.push(n); });
+  flush();
+  // 训练日志（原 viewLog）→ The Journey
+  const log=$('viewLog'); if(log){ [...log.children].forEach(n=>$('v-journey').appendChild(n)); }
+}
+function switchTab(t){
+  ['path','scroll','journey','self'].forEach(x=>{ $('v-'+x).hidden = x!==t; });
+  document.querySelectorAll('.bnav a').forEach(a=>a.classList.toggle('on',a.dataset.t===t));
+  const H=HERO[t]; $('heroLbl').textContent=H.lbl; $('heroH').innerHTML=H.h; $('heroZh').textContent=H.zh;
+  const cta=document.querySelector('.train-cta'); if(cta)cta.style.display=(t==='path')?'':'none';
+  if(t==='journey') switchLog(S.curLog||'daily');
   window.scrollTo(0,0);
 }
 
@@ -900,7 +961,7 @@ function trStepMove(dir){
     for(let si=0;si<PLAN.days[TR.di].n;si++)S.done[drillKey(S.week,TR.di,si)]=true;
     S.dayLog[todayStr()]=true;   // 记自然日 → streak
     save(); speak('训练完成，做得好。'); closeTrainer();
-    showToast('✓ 今天训练完成！写两句感受 →', ()=>{ switchView('log'); switchLog('daily'); }); return;
+    showToast('✓ 今天训练完成！写两句感受 →', ()=>{ switchTab('journey'); switchLog('daily'); }); return;
   }
   TR.pos=Math.max(0,Math.min(TR.flat.length-1,TR.pos+dir));
   renderTrStep();
@@ -998,6 +1059,7 @@ function renderAll(){
   renderMoves();renderCond();renderAnimals();renderCore();renderSafety();renderIntro();
 }
 renderAll();
+distributeTabs();          // 把区块分发进 4 个 tab 容器
 
 /* ====== 区块折叠（参考区默认收起，缩短页面）====== */
 function setFold(h,body,arrow,open){
@@ -1005,7 +1067,7 @@ function setFold(h,body,arrow,open){
   else{ body.setAttribute('hidden',''); arrow.textContent='▸'; h.classList.add('collapsed'); }
 }
 function initFolds(){
-  document.querySelectorAll('#viewTrain h2.foldable').forEach(h=>{
+  document.querySelectorAll('.view h2.foldable').forEach(h=>{
     if(h.dataset.folded) return;            // 只包裹一次
     h.dataset.folded='1';
     const key=h.dataset.fk;
@@ -1027,6 +1089,7 @@ function initFolds(){
   });
 }
 initFolds();
+switchTab('path');         // 初始进 The Path
 
 /* ====== 回到顶部按钮 ====== */
 window.addEventListener('scroll',()=>{
