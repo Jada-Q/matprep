@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MATPREP · 8周在家自主训练</title>
+<style>
+  :root{
+    --bg:#15181500;            /* set on body */
+    --ink:#e9e7e0;
+    --mut:#7f867b;
+    --mut2:#9aa094;
+    --card:#1f231e;
+    --card2:#252a23;
+    --line:#2d322b;
+    --orange:#e0592c;
+    --orange-soft:#e8763f;
+    --amber:#d9a441;
+    --good:#6f9a5e;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:#16190f00;
+    background-color:#161a14;
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:22px 18px 80px}
+  .mono{font-family:var(--mono);letter-spacing:.02em}
+  .mut{color:var(--mut)}
+
+  /* header */
+  .brand{font-weight:800;font-size:26px;letter-spacing:-.01em}
+  .brand b{color:var(--orange)}
+  .sub{color:var(--mut);font-size:13px;margin-top:2px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--mut2);
+    font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .btn-ghost:hover{border-color:var(--orange);color:var(--orange-soft)}
+
+  /* progress bar */
+  .prog{margin:18px 0 6px;display:flex;align-items:center;gap:10px}
+  .bars{flex:1;display:flex;gap:3px}
+  .seg{height:18px;flex:1;background:#2a2f27;border-radius:2px}
+  .seg.on{background:var(--orange)}
+  .prog-num{text-align:right;min-width:54px}
+  .prog-num .pct{font-weight:800;font-size:15px}
+  .prog-num .frac{font-size:11px;color:var(--mut)}
+
+  /* phases / weeks */
+  .phases{display:flex;gap:14px;color:var(--mut);font-size:11px;margin:14px 0 8px;flex-wrap:wrap}
+  .phases b{color:var(--mut2);font-weight:600}
+  .weeks{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .wk{min-width:42px;height:42px;border-radius:10px;background:var(--card);border:1px solid var(--line);
+    color:var(--mut2);font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+  .wk.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+  .wk.done{border-color:var(--good);color:var(--good)}
+
+  h2.sec{font-size:21px;font-weight:800;margin:34px 0 4px;display:flex;justify-content:space-between;align-items:baseline}
+  h2.sec .hint{font-size:11px;color:var(--mut);font-weight:400}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+
+  /* checklist */
+  .chk-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .chk-row:last-child{border-bottom:0}
+  .box{width:20px;height:20px;border:1.5px solid var(--mut);border-radius:5px;flex:0 0 auto;margin-top:2px;
+    display:flex;align-items:center;justify-content:center;transition:.15s}
+  .chk-row.on .box{background:var(--orange);border-color:var(--orange)}
+  .box svg{width:12px;height:12px;opacity:0;transition:.15s}
+  .chk-row.on .box svg{opacity:1}
+  .chk-t{font-weight:600}
+  .chk-d{color:var(--mut);font-size:12.5px;margin-top:1px}
+  .reset{float:right;color:var(--mut);font-size:11px;cursor:pointer}
+  .states{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .state{background:var(--card2);border:1px solid var(--line);color:var(--mut2);font-size:12.5px;
+    padding:7px 14px;border-radius:8px;cursor:pointer}
+  .state.on{border-color:var(--orange);color:var(--orange-soft)}
+  .states-label{color:var(--mut);font-size:11px;margin-top:14px}
+  .note{margin-top:14px;border:1px solid #4a3d22;background:#241f13;border-radius:10px;padding:12px 14px;
+    color:var(--amber);font-size:12.5px;line-height:1.55}
+
+  /* nutrition */
+  .wt{display:flex;align-items:center;gap:8px}
+  .wt input{width:74px;background:var(--card2);border:1px solid var(--line);color:var(--ink);
+    font-size:20px;font-weight:800;border-radius:8px;padding:6px 8px;text-align:center;font-family:var(--mono)}
+  .fuel{padding:12px 0;border-bottom:1px solid var(--line)}
+  .fuel:last-child{border-bottom:0}
+  .fuel .k{color:var(--mut);font-size:12px}
+  .fuel .v{font-family:var(--mono);font-weight:800;font-size:20px;color:var(--orange-soft);margin-top:2px}
+  .fuel .v small{color:var(--mut);font-weight:400;font-size:12px;margin-left:3px}
+
+  /* day list */
+  .day{display:flex;align-items:center;justify-content:space-between;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:10px;cursor:pointer}
+  .day.rest{opacity:.65}
+  .day .dl{display:flex;align-items:center;gap:10px}
+  .day .dn{font-weight:800;font-size:17px}
+  .tag{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
+  .tag.two{background:#2e2419;color:#d99a55}
+  .tag.one{background:#1f2a31;color:#5fa3c4}
+  .tag.rest{background:#262a23;color:var(--mut)}
+  .day .df{color:var(--mut);font-family:var(--mono);font-size:13px;cursor:pointer}
+  .day .dr{display:flex;align-items:center;gap:10px}
+  .day.fulldone{border-color:#3d5a2e;background:#18200f}
+  .dcheck{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--card2);
+    color:var(--mut);font-size:15px;font-weight:800;cursor:pointer;flex:0 0 auto;line-height:1}
+  .dcheck.on{background:var(--good);border-color:var(--good);color:#fff}
+
+  /* 习惯系统 */
+  .habit{display:flex;gap:14px;align-items:center;margin-top:14px;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .streak{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .streak .fire{font-size:26px}
+  .streak .num{font-family:var(--mono);font-size:30px;font-weight:800;color:var(--orange-soft);line-height:1}
+  .streak .lbl{font-size:10.5px;color:var(--mut);line-height:1.3}
+  .streak .lbl b.yes{color:var(--good)} .streak .lbl b.no{color:var(--amber)}
+  .heat{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+  .heat-row{display:flex;align-items:center;gap:3px}
+  .heat-row .hw{font-family:var(--mono);font-size:9px;color:var(--mut);width:20px;flex:0 0 auto}
+  .heat-row .cell{flex:1;height:11px;border-radius:2px;background:#2a2f27}
+  .heat-row .cell.on{background:var(--orange)}
+
+  /* topbar 按钮组 + tab */
+  .topbtns{display:flex;gap:6px}
+  .tabbar{display:flex;gap:6px;margin-top:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;padding:4px}
+  .tab{flex:1;background:transparent;border:0;color:var(--mut);font-size:14px;font-weight:700;
+    padding:9px 0;border-radius:7px;cursor:pointer}
+  .tab.on{background:var(--orange);color:#fff}
+
+  /* 动物爬行 */
+  .animal{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:10px}
+  .animal:first-child{margin-top:0}
+  .ahead{display:flex;align-items:center;gap:11px}
+  .aemoji{font-size:24px;flex:0 0 auto}
+  .ameta{flex:1;min-width:0}
+  .afocus{color:var(--mut);font-size:12.5px;margin-top:7px;padding-left:35px}
+  .vbtn-sm{color:var(--orange-soft);border:1px solid #4a2c1e;background:#241710;border-radius:7px;
+    padding:5px 11px;font-size:12px;text-decoration:none;flex:0 0 auto}
+
+  /* 日志 */
+  .logtabs{display:flex;gap:6px;margin-top:14px}
+  .ltab{flex:1;background:var(--card);border:1px solid var(--line);color:var(--mut2);font-size:14px;
+    font-weight:700;padding:10px 0;border-radius:9px;cursor:pointer}
+  .ltab.on{background:var(--card2);border-color:var(--orange);color:var(--orange-soft)}
+  .lf-date{color:var(--mut);font-size:12px;margin-bottom:10px}
+  .lf-l{display:block;font-size:13px;color:var(--mut2);margin-top:12px}
+  .lf-t{width:100%;margin-top:5px;background:var(--card2);border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.5}
+  .lf-t:focus{outline:none;border-color:var(--orange)}
+  .lf-save{width:100%;margin-top:16px;background:var(--orange);color:#fff;border:0;border-radius:10px;
+    padding:13px;font-size:15px;font-weight:700;cursor:pointer}
+  .log-empty{color:var(--mut);text-align:center;padding:30px 16px;font-size:13px}
+  .log-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:12px}
+  .li-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .li-date{color:var(--orange-soft);font-size:13px;font-weight:700}
+  .li-del{color:var(--mut);font-size:11px;cursor:pointer}
+  .li-del:hover{color:var(--orange-soft)}
+  .li-row{display:flex;gap:10px;padding:4px 0;font-size:13.5px}
+  .li-row .li-k{color:var(--mut);flex:0 0 70px;font-size:12px}
+  .li-row.mut{color:var(--mut)}
+
+  /* 分享二维码弹窗 */
+  .qr-modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);display:flex;
+    align-items:center;justify-content:center;padding:24px}
+  .qr-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;text-align:center;max-width:300px}
+  .qr-box img{border-radius:10px;background:#fff;padding:8px}
+  .qr-t{font-weight:800;font-size:17px;margin-bottom:14px}
+  .qr-url{color:var(--orange-soft);font-size:12px;margin-top:12px;word-break:break-all}
+  .qr-hint{color:var(--mut);font-size:11.5px;margin-top:10px;line-height:1.6}
+  .qr-x{margin-top:16px;background:var(--card2);border:1px solid var(--line);color:var(--ink);
+    border-radius:9px;padding:10px 24px;font-size:14px;cursor:pointer}
+
+  /* move cards */
+  .move{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+  .move h3{margin:0;font-size:17px;font-weight:800}
+  .move .en{font-family:var(--mono);color:var(--mut);font-size:12px;margin-top:1px}
+  .fig{background:var(--card2);border:1px solid var(--line);border-radius:10px;margin:12px 0;padding:6px}
+  .fig svg{display:block;width:100%;height:auto}
+  ol.steps{margin:6px 0 0;padding:0;list-style:none;counter-reset:s}
+  ol.steps li{display:flex;gap:10px;padding:5px 0;font-size:14px}
+  ol.steps li .n{counter-increment:s;flex:0 0 auto;width:18px;height:18px;border-radius:5px;
+    background:#2a2f27;color:var(--orange-soft);font-family:var(--mono);font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;margin-top:2px}
+  ol.steps li .n::before{content:counter(s)}
+  .vbtn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;color:var(--orange-soft);
+    border:1px solid #4a2c1e;background:#241710;border-radius:8px;padding:6px 12px;font-size:12.5px;
+    text-decoration:none;cursor:pointer}
+  .vbtn:hover{background:#2e1c12}
+
+  /* conditioning rows */
+  .cond{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--line)}
+  .cond:last-child{border-bottom:0}
+  .cond .cn{font-weight:700}
+  .cond .ce{font-family:var(--mono);color:var(--mut);font-size:12px;margin-left:8px}
+  .cond a{color:var(--mut2);font-size:12.5px;text-decoration:none}
+  .cond a:hover{color:var(--orange-soft)}
+
+  /* safety */
+  .safety{border:1px solid #5a2f1e;background:#241310;border-radius:12px;padding:16px;margin-top:14px}
+  .safety .sh{color:var(--orange-soft);font-weight:700;font-size:13px;margin-bottom:10px}
+  .safety ol{margin:0;padding-left:18px}
+  .safety li{margin:10px 0;font-size:13.5px;line-height:1.55}
+  .safety li b{color:var(--orange-soft)}
+
+  .spirit{color:var(--mut);font-size:12.5px;line-height:1.7;margin-top:14px}
+
+  /* sticky train button */
+  .train-cta{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:40;
+    background:var(--orange);color:#fff;border:0;border-radius:30px;padding:14px 28px;font-size:15px;
+    font-weight:700;box-shadow:0 8px 30px rgba(224,89,44,.4);cursor:pointer;display:flex;align-items:center;gap:8px}
+  .train-cta:active{transform:translateX(-50%) scale(.97)}
+
+  /* ===== TRAINING MODE (fullscreen wizard) ===== */
+  .trainer{position:fixed;inset:0;z-index:100;background:#0f120d;display:none;flex-direction:column;
+    padding:max(20px,env(safe-area-inset-top)) 20px max(24px,env(safe-area-inset-bottom));text-align:center}
+  .trainer.open{display:flex}
+  .tr-top{display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:13px}
+  .tr-x{background:none;border:0;color:var(--mut);font-size:26px;cursor:pointer;line-height:1;padding:4px 10px}
+  .tr-body{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px}
+  .tr-idx{font-family:var(--mono);color:var(--mut);font-size:14px;letter-spacing:.1em}
+  .tr-name{font-size:34px;font-weight:800;line-height:1.15}
+  .tr-en{font-family:var(--mono);color:var(--mut);font-size:14px}
+  .tr-fig{width:min(78vw,360px)}
+  .tr-fig svg{width:100%;height:auto;background:#181c15;border-radius:14px;padding:8px}
+  .tr-step{font-size:20px;font-weight:600;max-width:440px;min-height:62px}
+  .tr-step .sp-n{color:var(--orange-soft);font-family:var(--mono);margin-right:8px}
+  .tr-timer{font-family:var(--mono);font-size:60px;font-weight:800;color:var(--orange-soft);letter-spacing:.04em}
+  .tr-timer.rest{color:var(--good)}
+  .tr-ctl{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:6px}
+  .tr-btn{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:12px;
+    padding:14px 0;font-size:16px;font-weight:700;cursor:pointer;flex:1;max-width:150px}
+  .tr-btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+  .tr-hint{color:var(--mut);font-size:12px;margin-top:10px}
+  .tr-toggle{display:flex;gap:16px;justify-content:center;color:var(--mut);font-size:13px;margin-top:8px}
+  .tr-toggle label{display:flex;align-items:center;gap:6px;cursor:pointer}
+
+  /* ===== PRINT CARD ===== */
+  #printRoot{display:none}
+  @media print{
+    body{background:#fff;color:#111}
+    .wrap,.train-cta,.trainer{display:none!important}
+    #printRoot{display:block;max-width:none;padding:0}
+    .pc-h{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #111;padding-bottom:6px}
+    .pc-h .pt{font-weight:800;font-size:20px}
+    .pc-h .ps{font-size:12px;color:#555}
+    .pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;margin-top:12px}
+    .pc-m{break-inside:avoid;border:1px solid #ccc;border-radius:8px;padding:8px 10px}
+    .pc-m h4{margin:0 0 4px;font-size:14px}
+    .pc-m .pen{font-family:var(--mono);color:#777;font-size:10px;font-weight:400}
+    .pc-m ol{margin:4px 0 0;padding-left:16px;font-size:11.5px;line-height:1.4}
+    .pc-safe{margin-top:14px;border:1.5px solid #c0392b;border-radius:8px;padding:8px 12px;break-inside:avoid}
+    .pc-safe b{color:#c0392b}
+    .pc-safe ul{margin:4px 0 0;padding-left:16px;font-size:11px}
+    .pc-foot{margin-top:10px;font-size:10px;color:#777}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="topbar">
+    <div>
+      <div class="brand">MAT<b>PREP</b></div>
+      <div class="sub mono">上垫前 · 8周自主训练</div>
+    </div>
+    <div class="topbtns">
+      <button class="btn-ghost" onclick="shareApp()">分享</button>
+      <button class="btn-ghost" onclick="resetAll()">清空</button>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tab on" id="tabTrain" onclick="switchView('train')">训练</button>
+    <button class="tab" id="tabLog" onclick="switchView('log')">记录</button>
+  </div>
+
+  <div id="viewTrain">
+  <div class="prog">
+    <div class="bars" id="bars"></div>
+    <div class="prog-num"><div class="pct" id="pct">0%</div><div class="frac" id="frac">0 / 0 练</div></div>
+  </div>
+
+  <div class="phases">
+    <span><b>阶段一</b> · 唤醒 (W1–2)</span>
+    <span><b>阶段二</b> · 加载 (W3–6)</span>
+    <span><b>阶段三</b> · 模拟 (W7–8)</span>
+  </div>
+  <div class="weeks" id="weeks"></div>
+
+  <div class="habit">
+    <div class="streak" id="streak"></div>
+    <div class="heat" id="heat"></div>
+  </div>
+
+  <!-- 练前自检 -->
+  <h2 class="sec">练前自检 · 今天能练吗 <span class="hint">开工先过一遍</span></h2>
+  <div class="card">
+    <span class="reset" onclick="resetChecklist()">重置</span>
+    <div id="checklist"></div>
+    <div class="states-label">今天身体状态</div>
+    <div class="states" id="states"></div>
+    <div class="note" id="chkNote"></div>
+  </div>
+
+  <!-- 供能 -->
+  <h2 class="sec">供能 · 按体重算 <span class="hint">↑大强度=多吃，不是少吃</span></h2>
+  <div class="card">
+    <div class="wt">体重 <input id="wt" type="number" min="35" max="160" value="65"> kg
+      <span class="mut mono" style="margin-left:auto;font-size:12px">训练日目标 ↓</span></div>
+    <div style="margin-top:10px">
+      <div class="fuel"><div class="k">蛋白质 / 天</div><div class="v" id="fProtein"></div></div>
+      <div class="fuel"><div class="k">碳水 / 训练日</div><div class="v" id="fCarb"></div></div>
+      <div class="fuel"><div class="k">饮水基线</div><div class="v" id="fWater"></div></div>
+      <div class="fuel"><div class="k">供能区间</div><div class="v" id="fKcal"></div></div>
+    </div>
+    <div class="note" style="border-color:#33402a;background:#1b2415;color:var(--mut2)">
+      <b style="color:var(--ink)">原则：</b>这是"为训练供能"的区间，不是减脂目标。两练制下恢复优先级 = 睡眠 ≥ 碳水 ≥ 蛋白。
+      觉得累了先加碳水和睡够，别加练。蛋白分 4 餐摄入，每餐 25–40g 吸收最好。
+    </div>
+  </div>
+
+  <!-- 本周训练 -->
+  <h2 class="sec" id="weekTitle">本周训练</h2>
+  <div class="card" style="padding:14px 16px;border-color:#4a2c1e;background:#1c1410">
+    <span style="color:var(--orange-soft);font-weight:700">第 <span id="curWeek">1</span> 周</span>
+    <span class="mut" style="font-size:13px"> · 全程低强度，只求动作做对。每个动作慢做，有条件像自查姿势。</span>
+  </div>
+  <div id="days"></div>
+
+  <!-- 动作图鉴 -->
+  <h2 class="sec">动作图鉴 · 图 + 视频 <span class="hint">不会先看这里 ↓</span></h2>
+  <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px">
+    简笔图看动作 <b style="color:var(--orange-soft)">方位</b>，按编号步骤练。动作是动态的，第一次务必"看示范视频"确认细节——别照着火柴人瞎练。
+  </div>
+  <div id="moves"></div>
+
+  <!-- 体能 / 串联 -->
+  <h2 class="sec">体能 · 串联日范本 <span class="hint">穿插在训练日</span></h2>
+  <div class="card" id="cond"></div>
+
+  <!-- 动物爬行 -->
+  <h2 class="sec">动物爬行 · 趣味移动 <span class="hint">热身/体能，非招式</span></h2>
+  <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
+    枯燥练不下去时换这个。动物爬行是 BJJ 道馆常用热身——练地面移动、协调和体能，趣味高、受伤低。每个爬 1-2 趟（约 8-10 米）。
+  </div>
+  <div class="card" id="animals"></div>
+
+  <!-- 注意事项 -->
+  <h2 class="sec">注意事项 · 必读补充</h2>
+  <div class="safety">
+    <div class="sh">⚠ 4 条安全红线 · 别跳过</div>
+    <ol id="safetyList"></ol>
+  </div>
+
+  <!-- 精神内核 -->
+  <h2 class="sec">精神内核 · 它究竟是什么</h2>
+  <div class="spirit" id="spirit"></div>
+  </div><!-- /viewTrain -->
+
+  <div id="viewLog" hidden>
+    <h2 class="sec">训练日志 <span class="hint">日 / 周 / 月复盘</span></h2>
+    <div class="logtabs">
+      <button class="ltab on" id="lt-daily" onclick="switchLog('daily')">日</button>
+      <button class="ltab" id="lt-weekly" onclick="switchLog('weekly')">周</button>
+      <button class="ltab" id="lt-monthly" onclick="switchLog('monthly')">月</button>
+    </div>
+    <div class="card" id="logForm"></div>
+    <div id="logList"></div>
+  </div>
+</div>
+
+<button class="train-cta" onclick="startToday()">▶ 训练模式（跟练不碰屏）</button>
+
+<!-- 训练模式 -->
+<div class="trainer" id="trainer">
+  <div class="tr-top">
+    <span id="trDay" class="mono"></span>
+    <button class="tr-x" onclick="closeTrainer()">✕</button>
+  </div>
+  <div class="tr-body">
+    <div class="tr-idx" id="trIdx"></div>
+    <div class="tr-name" id="trName"></div>
+    <div class="tr-en mono" id="trEn"></div>
+    <div class="tr-fig" id="trFig"></div>
+    <div class="tr-step" id="trStep"></div>
+    <div class="tr-timer" id="trTimer" style="display:none"></div>
+  </div>
+  <div class="tr-ctl">
+    <button class="tr-btn" id="trPrev" onclick="trStepMove(-1)">◀ 上一步</button>
+    <button class="tr-btn primary" id="trNext" onclick="trStepMove(1)">下一步 ▶</button>
+  </div>
+  <div class="tr-toggle">
+    <label><input type="checkbox" id="trVoice" checked onchange="saveOpts()"> 🔊 语音报动作</label>
+    <label><input type="checkbox" id="trAuto" onchange="saveOpts()"> ⏱ 每步 30s 自动</label>
+  </div>
+  <div class="tr-hint">空格 / 点屏右半 = 下一步 · 点屏左半 = 上一步</div>
+</div>
+
+<!-- 打印卡 -->
+<div id="printRoot"></div>
+
+<script>
+/* ====== streak 纯函数（与 streak.test.mjs 同源，已 8/8 通过）====== */
+function _ymd(date){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
+function _parseYmd(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function _isRestDay(date){return date.getDay()===0;}
+function computeStreak(practiced,todayStr){
+  const has=k=>practiced instanceof Set?practiced.has(k):!!practiced[k];
+  let count=0,first=true;const d=_parseYmd(todayStr);
+  for(let i=0;i<400;i++){
+    if(_isRestDay(d)){d.setDate(d.getDate()-1);first=false;continue;}
+    if(has(_ymd(d)))count++; else if(!first)break;
+    first=false;d.setDate(d.getDate()-1);
+  }
+  return count;
+}
+function todayStr(){return _ymd(new Date());}
+
+/* ================= DATA ================= */
+const PLAN = {
+  weeks: 8,
+  // 一周训练日：8+4+4+8+5+3 = 32 练/周
+  days: [
+    {d:'周一', type:'two',  label:'两练', n:8},
+    {d:'周二', type:'one',  label:'单练', n:4},
+    {d:'周三', type:'one',  label:'单练', n:4},
+    {d:'周四', type:'two',  label:'两练', n:8},
+    {d:'周五', type:'two',  label:'两练', n:5},
+    {d:'周六', type:'one',  label:'单练', n:3},
+    {d:'周日', type:'rest', label:'休息', n:0},
+  ],
+  checklist:[
+    {t:'睡够（≥6 小时）', d:'缺觉做受身/跳跃易崴脚磕头'},
+    {t:'没喝酒 / 不宿醉', d:'酒精脱水、影响平衡和恢复'},
+    {t:'没发烧 / 无全身症状', d:'胸闷、全身肌肉酸痛 = 停练'},
+    {t:'关节无尖锐刺痛', d:'钝痛/酸正常，刺痛 = 停做动作'},
+    {t:'不空腹做大强度', d:'至少半根香蕉垫底，防低血糖'},
+    {t:'指甲剪短 / 摘掉首饰', d:'上垫日：防划伤、勾伤、丢失'},
+  ],
+  states:['状态好','一般','缺觉/经期/很累'],
+  // 营养系数（每 kg）
+  fuel:{ protein:[1.8,2.2], carb:[4,6], kcalPerKg:[33,38], waterBase:2.5 },
+  // 6 个带图详解动作
+  moves:[
+    {name:'虾行', en:'hip escape / shrimp', fig:'shrimp', steps:[
+      '仰卧屈膝，双脚踩地，双手护在胸前。',
+      '一只脚用力蹬地，同时把髋向斜后方推开。',
+      '身体顺势侧转成"虾"形——肩留原地、髋远离。',
+      '换边重复，沿垫子一路移动。']},
+    {name:'桥 / upa', en:'bridge / upa', fig:'bridge', steps:[
+      '仰卧，双脚跟尽量贴近臀部、踩实地面。',
+      '双脚发力，把髋向天花板顶高（肩与脚撑地）。',
+      '顶到最高时向一侧翻转，护住该侧手臂。',
+      '力量全来自髋和腿，肩颈不要发力。']},
+    {name:'技术起身', en:'technical stand up', fig:'standup', steps:[
+      '坐姿，一只手在身后撑地，同侧腿伸直。',
+      '另一腿屈膝踩地，另一只手举在脸前防护。',
+      '撑地手与前脚同时发力，把髋抬离地面。',
+      '后腿从身下穿过收回、顺势站起，全程护脸。']},
+    {name:'受身 · 坐姿拍倒', en:'back breakfall', fig:'breakfall', steps:[
+      '坐在垫上，下巴贴胸（永远看肚脐，别后仰磕头）。',
+      '身体向后倒，背成圆弧着地。',
+      '着地瞬间双臂张开、手掌用力拍垫泄力。',
+      '熟练后再升跪姿→蹲姿，别一上来站着摔。']},
+    {name:'扑防', en:'sprawl', fig:'sprawl', steps:[
+      '站立预备，重心略前。',
+      '对手抱腿瞬间，髋猛地向下沉。',
+      '双腿同时向后蹬直，上身压在对方背上。',
+      '双手撑地控制，再恢复站姿。']},
+    {name:'转身脱困', en:'sit-out', fig:'sitout', steps:[
+      '四足支撑（俯撑），背保持水平。',
+      '一只手撑稳、另一腿从身下快速穿过。',
+      '顺势转髋、面朝上坐出，脱离压制。',
+      '接着可继续转回或起身。']},
+  ],
+  // 7 个体能/串联（名+英+视频搜索）
+  conditioning:[
+    {name:'反向虾', en:'reverse shrimp'},
+    {name:'动作串联流', en:'solo flow'},
+    {name:'后滚翻', en:'granby roll'},
+    {name:'熊爬', en:'bear crawl'},
+    {name:'颈部等长', en:'neck isometrics'},
+    {name:'死悬垂 / 毛巾悬挂', en:'dead hang'},
+    {name:'毛巾抓握', en:'towel grip'},
+  ],
+  // 动物爬行 · 趣味移动（真实 movement 动作，定位热身/体能，非招式）
+  animalMoves:[
+    {name:'熊爬', en:'bear crawl', focus:'核心+肩，对侧手脚同步前进', emoji:'🐻'},
+    {name:'蟹走', en:'crab walk', focus:'后链、肩后侧，臀部离地走', emoji:'🦀'},
+    {name:'鳄鱼爬', en:'leopard / alligator crawl', focus:'贴地低姿，核心全程收紧', emoji:'🐊'},
+    {name:'猩猩走', en:'gorilla / ape walk', focus:'髋灵活，双手撑地侧向移', emoji:'🦍'},
+    {name:'青蛙跳', en:'frog jump', focus:'爆发+落地缓冲，膝盖外展', emoji:'🐸'},
+    {name:'尺蠖', en:'inchworm', focus:'后链拉伸+核心，手脚交替走', emoji:'🐛'},
+  ],
+  safety:[
+    ['颈部只做等长。','手掌抵住头各方向轻推、头不动，各 10 秒×3。不负重、不做颈桥(摔跤桥)——0 基础做颈桥极易拉伤颈椎，这是自练最高发的伤。'],
+    ['受身严格渐进。','坐姿拍倒 → 跪姿后倒 → 蹲/站，每级练熟再升。永远在垫子上，护好后脑。第三阶段才碰站姿摔。'],
+    ['每次必热身 5 分钟。','冷启动做虾行/受身最容易拉伤。先动态转髋转肩、慢爬行热身。'],
+    ['频率 > 强度。','宁可每天到位，别一天猛练受伤停一周。任何关节有刺痛立刻停该动作。'],
+  ],
+  spirit:'数据存在本机浏览器(localStorage)，换设备不同步。本计划仅为上垫前的体能与动作准备，不能替代道馆真人指导；招式实战必须在教练在场下学。第 8 周结束 = 去道馆上第一节体验课（东京 Carpe Diem / Bonsai 等多对不会日语者友好，首课多为免费体验）。',
+};
+
+/* ============ STICK FIGURE SVGs ============ */
+/* 统一画风：虚线地面 + 火柴人 + 橙色箭头。左右两态表示动作前后。 */
+const GROUND = '<line x1="14" y1="118" x2="186" y2="118" stroke="#5a6152" stroke-width="2" stroke-dasharray="7 6"/>';
+const C='#cfd2c7', O='#e0592c';
+function fig(inner){return `<svg viewBox="0 0 400 132" xmlns="http://www.w3.org/2000/svg">`+
+  `<g transform="translate(0,0)">${GROUND}${inner.a}</g>`+
+  `<g transform="translate(214,0)">${GROUND}${inner.b}</g>`+
+  (inner.arrow||'')+`</svg>`;}
+const P=(d)=>`<path d="${d}" fill="none" stroke="${C}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+const HEAD=(x,y,r=8)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${C}" stroke-width="2.4"/>`;
+const AR=(x1,y1,x2,y2)=>`<g stroke="${O}" stroke-width="3" fill="${O}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-linecap="round"/><path d="M${x2},${y2} l-8,-4 l3,4 l-3,4 z" transform="rotate(${Math.atan2(y2-y1,x2-x1)*180/Math.PI},${x2},${y2})"/></g>`;
+
+const FIGS = {
+  shrimp: fig({
+    a: HEAD(60,86)+P('M70,88 L120,96')+P('M120,96 L150,80')+P('M120,96 L150,108')+P('M70,88 L95,78')+P('M70,88 L95,98'),
+    b: HEAD(40,88)+P('M50,90 L92,86 L70,108')+P('M92,86 L120,72')+P('M92,86 L116,96')+P('M50,90 L34,80'),
+    arrow: AR(150,60,110,60)
+  }),
+  bridge: fig({
+    a: HEAD(150,100)+P('M142,100 L92,104')+P('M92,104 L60,108')+P('M92,104 L70,80 L92,104')+P('M60,108 L40,108'),
+    b: HEAD(150,96)+P('M142,96 L96,70')+P('M96,70 L60,104')+P('M96,70 L88,52')+P('M60,104 L40,108'),
+    arrow: AR(96,118,96,66)
+  }),
+  standup: fig({
+    a: HEAD(70,96)+P('M70,104 L70,112')+P('M70,112 L110,116')+P('M70,112 L52,108')+P('M70,104 L96,90'),
+    b: HEAD(120,46)+P('M120,54 L118,86')+P('M118,86 L104,116')+P('M118,86 L132,116')+P('M120,62 L100,78'),
+    arrow: AR(86,96,118,58)
+  }),
+  breakfall: fig({
+    a: HEAD(78,72)+P('M78,80 L78,104 L106,110')+P('M78,92 L100,86')+P('M78,92 L100,98'),
+    b: HEAD(150,96)+P('M142,98 L96,104')+P('M96,104 L70,98')+P('M96,104 L74,116')+P('M120,100 L124,86'),
+    arrow: AR(150,76,118,100)
+  }),
+  sprawl: fig({
+    a: HEAD(96,46)+P('M96,54 L96,92')+P('M96,92 L84,116')+P('M96,92 L108,116')+P('M96,64 L82,80')+P('M96,64 L110,80'),
+    b: HEAD(60,88)+P('M68,90 L130,104')+P('M130,104 L160,112')+P('M130,104 L150,90')+P('M68,90 L52,98'),
+    arrow: AR(108,60,150,96)
+  }),
+  sitout: fig({
+    a: HEAD(70,72)+P('M76,76 L110,96')+P('M70,78 L70,98')+P('M110,96 L110,114')+P('M88,86 L88,114'),
+    b: HEAD(150,92)+P('M142,94 L100,100')+P('M100,100 L74,108')+P('M120,96 L122,80')+P('M100,100 L96,116'),
+    arrow: AR(118,68,150,96)
+  }),
+};
+function simpleFig(){ // 体能动作占位图标
+  return `<svg viewBox="0 0 60 40"><line x1="6" y1="34" x2="54" y2="34" stroke="#5a6152" stroke-width="2" stroke-dasharray="4 4"/>${HEAD(30,14,6)}${P('M30,20 L30,30')}${P('M30,24 L22,30')}${P('M30,24 L38,30')}</svg>`;}
+
+/* ============ STATE ============ */
+const LS='matprep.v1';
+let S = load();
+function load(){ try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}} }
+function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
+S.week = S.week||1;
+S.done = S.done||{};        // key `w{week}-d{di}-{si}` -> true
+S.chk = S.chk||{};          // checklist idx -> bool
+S.state = S.state??null;
+S.wt = S.wt||65;
+S.opts = S.opts||{voice:true,auto:false};
+S.dayLog = S.dayLog||{};    // 'YYYY-MM-DD' -> true（自然日练了没，供 streak）
+S.journal = S.journal||{daily:[],weekly:[],monthly:[]};
+S.curLog = S.curLog||'daily';
+
+/* ============ RENDER ============ */
+const $=id=>document.getElementById(id);
+const ydoc=YOUTUBE=>`https://www.youtube.com/results?search_query=${encodeURIComponent(YOUTUBE)}`;
+
+function totalDrillsPerWeek(){return PLAN.days.reduce((a,d)=>a+d.n,0);}
+function drillKey(w,di,si){return `w${w}-d${di}-s${si}`;}
+function dayDone(w,di){let c=0;for(let si=0;si<PLAN.days[di].n;si++)if(S.done[drillKey(w,di,si)])c++;return c;}
+function weekDone(w){let c=0;PLAN.days.forEach((d,di)=>c+=dayDone(w,di));return c;}
+function grandTotal(){return totalDrillsPerWeek()*PLAN.weeks;}
+function grandDone(){let c=0;for(let w=1;w<=PLAN.weeks;w++)c+=weekDone(w);return c;}
+
+function renderProgress(){
+  const tot=grandTotal(), done=grandDone(), pct=Math.round(done/tot*100);
+  $('pct').textContent=pct+'%';
+  $('frac').textContent=`${done} / ${tot} 练`;
+  $('bars').innerHTML = Array.from({length:8},(_,i)=>{
+    const filled = weekDone(i+1)>=totalDrillsPerWeek() && totalDrillsPerWeek()>0;
+    return `<div class="seg ${filled?'on':''}"></div>`;
+  }).join('');
+}
+function renderWeeks(){
+  $('weeks').innerHTML=Array.from({length:8},(_,i)=>{
+    const w=i+1, full=weekDone(w)>=totalDrillsPerWeek()&&totalDrillsPerWeek()>0;
+    return `<div class="wk ${w===S.week?'active':''} ${full?'done':''}" onclick="setWeek(${w})">W${w}</div>`;
+  }).join('');
+  $('curWeek').textContent=S.week;
+  $('weekTitle').textContent=`第 ${S.week} 周训练`;
+}
+function setWeek(w){S.week=w;save();renderWeeks();renderDays();}
+
+function renderChecklist(){
+  $('checklist').innerHTML=PLAN.checklist.map((c,i)=>`
+    <div class="chk-row ${S.chk[i]?'on':''}" onclick="toggleChk(${i})">
+      <div class="box"><svg viewBox="0 0 12 12"><path d="M2,6 L5,9 L10,3" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><div class="chk-t">${c.t}</div><div class="chk-d">${c.d}</div></div>
+    </div>`).join('');
+  $('states').innerHTML=PLAN.states.map((s,i)=>
+    `<div class="state ${S.state===i?'on':''}" onclick="setState(${i})">${s}</div>`).join('');
+  updateChkNote();
+}
+function toggleChk(i){S.chk[i]=!S.chk[i];save();renderChecklist();}
+function resetChecklist(){S.chk={};save();renderChecklist();}
+function setState(i){S.state=S.state===i?null:i;save();renderChecklist();}
+function updateChkNote(){
+  const unchecked=PLAN.checklist.filter((_,i)=>!S.chk[i]).length;
+  const n=$('chkNote');
+  if(unchecked===0 && S.state!==null){
+    n.style.borderColor='#33402a';n.style.background='#1b2415';n.style.color='var(--good)';
+    n.innerHTML='✓ 全部确认。可以上垫了——记得先热身 5 分钟。';
+  }else{
+    n.style.borderColor='#4a3d22';n.style.background='#241f13';n.style.color='var(--amber)';
+    n.innerHTML=`还有 <b>${unchecked}</b> 项未确认<br>其中若是身体真有的情况(刺痛/缺觉/发烧/喝酒)——今天降级或停练；只是还没点逐项确认。`;
+  }
+}
+
+function renderFuel(){
+  const w=S.wt; const f=PLAN.fuel;
+  const r=(a,b,u)=>`${Math.round(w*a)}–${Math.round(w*b)} <small>${u}</small>`;
+  $('fProtein').innerHTML=r(f.protein[0],f.protein[1],'g');
+  $('fCarb').innerHTML=r(f.carb[0],f.carb[1],'g');
+  $('fWater').innerHTML=`${f.waterBase.toFixed(1)} <small>L + 出汗另补</small>`;
+  $('fKcal').innerHTML=r(f.kcalPerKg[0],f.kcalPerKg[1],'kcal');
+}
+
+function renderDays(){
+  const w=S.week;
+  $('days').innerHTML=PLAN.days.map((d,di)=>{
+    if(d.type==='rest') return `<div class="day rest"><div class="dl"><span class="dn">${d.d}</span>
+      <span class="tag rest">休息</span></div><span class="df">—</span></div>`;
+    const dn=dayDone(w,di), full=dn>=d.n;
+    return `<div class="day ${full?'fulldone':''}"><div class="dl" onclick="startDay(${di})">
+      <span class="dn">${d.d}</span><span class="tag ${d.type}">${d.label}</span></div>
+      <div class="dr"><span class="df" onclick="startDay(${di})">${dn}/${d.n} ▸</span>
+      <button class="dcheck ${full?'on':''}" onclick="toggleDayDone(${di},event)" title="标记今天练完">✓</button></div></div>`;
+  }).join('');
+}
+
+function renderMoves(){
+  $('moves').innerHTML=PLAN.moves.map(m=>`
+    <div class="move">
+      <h3>${m.name}</h3><div class="en">${m.en}</div>
+      <div class="fig">${FIGS[m.fig]||''}</div>
+      <ol class="steps">${m.steps.map(s=>`<li><span class="n"></span><span>${s}</span></li>`).join('')}</ol>
+      <a class="vbtn" href="${ydoc('BJJ '+m.en+' solo drill')}" target="_blank" rel="noopener">▷ 看示范视频</a>
+    </div>`).join('');
+}
+function renderCond(){
+  $('cond').innerHTML=PLAN.conditioning.map(c=>`
+    <div class="cond"><div><span class="cn">${c.name}</span><span class="ce">${c.en}</span></div>
+    <a href="${ydoc('BJJ '+c.en)}" target="_blank" rel="noopener">▷ 视频</a></div>`).join('');
+}
+function renderAnimals(){
+  $('animals').innerHTML=PLAN.animalMoves.map(a=>`
+    <div class="animal">
+      <div class="ahead"><span class="aemoji">${a.emoji}</span>
+        <div class="ameta"><div class="cn">${a.name}</div><div class="ce">${a.en}</div></div>
+        <a class="vbtn-sm" href="${ydoc('animal movement '+a.en+' tutorial')}" target="_blank" rel="noopener">▷ 视频</a></div>
+      <div class="afocus">${a.focus}</div>
+    </div>`).join('');
+}
+function renderSafety(){
+  $('safetyList').innerHTML=PLAN.safety.map(([h,b])=>`<li><b>${h}</b> ${b}</li>`).join('');
+  $('spirit').textContent=PLAN.spirit;
+}
+
+/* ====== 视图切换 训练/记录 ====== */
+function switchView(v){
+  const train=v==='train';
+  $('viewTrain').hidden=!train; $('viewLog').hidden=train;
+  $('tabTrain').classList.toggle('on',train); $('tabLog').classList.toggle('on',!train);
+  const cta=document.querySelector('.train-cta'); if(cta)cta.style.display=train?'':'none';
+  if(!train) switchLog(S.curLog||'daily');
+  window.scrollTo(0,0);
+}
+
+/* ====== 训练日志 日/周/月 ====== */
+const LOG_CFG={
+  daily:{unit:'今天',fields:[
+    {k:'did',label:'今天练了什么',ph:'例：W2周二单练 + 熊爬2趟'},
+    {k:'feel',label:'身体感受',ph:'例：左肩有点酸，虾行顺多了'},
+    {k:'note',label:'一句话',ph:'随便记'},
+  ]},
+  weekly:{unit:'本周',fields:[
+    {k:'win',label:'本周亮点',ph:'哪个动作有进步'},
+    {k:'stuck',label:'卡点',ph:'哪里别扭/没坚持'},
+    {k:'next',label:'下周重点',ph:'下周想攻克什么'},
+  ]},
+  monthly:{unit:'本月',fields:[
+    {k:'milestone',label:'里程碑',ph:'达成了什么'},
+    {k:'body',label:'体感变化',ph:'柔韧 / 耐力 / 熟练度'},
+    {k:'next',label:'下月目标',ph:''},
+  ]},
+};
+function switchLog(g){
+  S.curLog=g; save();
+  ['daily','weekly','monthly'].forEach(x=>$('lt-'+x).classList.toggle('on',x===g));
+  renderLogForm(); renderLogList();
+}
+function renderLogForm(){
+  const cfg=LOG_CFG[S.curLog];
+  $('logForm').innerHTML=`<div class="lf-date mono">${cfg.unit} · ${todayStr()}</div>
+    ${cfg.fields.map(f=>`<label class="lf-l">${f.label}
+      <textarea class="lf-t" id="lf-${f.k}" rows="2" placeholder="${f.ph}"></textarea></label>`).join('')}
+    <button class="lf-save" onclick="saveLogEntry()">保存${cfg.unit}记录</button>`;
+}
+function saveLogEntry(){
+  const g=S.curLog, cfg=LOG_CFG[g];
+  const entry={date:todayStr(), ts:Date.now()}; let any=false;
+  cfg.fields.forEach(f=>{ const v=$('lf-'+f.k).value.trim(); entry[f.k]=v; if(v)any=true; });
+  if(!any){ alert('写点什么再保存'); return; }
+  S.journal[g].unshift(entry);
+  if(g==='daily') S.dayLog[todayStr()]=true;   // 记日记 = 今天练了 → 点亮热图/streak
+  save(); renderLogForm(); renderLogList();
+}
+function deleteLogEntry(g,ts){
+  if(!confirm('删这条记录？'))return;
+  S.journal[g]=S.journal[g].filter(e=>e.ts!==ts); save(); renderLogList();
+}
+function renderLogList(){
+  const g=S.curLog, cfg=LOG_CFG[g], list=S.journal[g]||[];
+  if(!list.length){ $('logList').innerHTML=`<div class="log-empty">还没有${cfg.unit}记录。练完回来写一条。</div>`; return; }
+  $('logList').innerHTML=list.map(e=>`<div class="log-item">
+    <div class="li-top"><span class="li-date mono">${e.date}</span>
+      <span class="li-del" onclick="deleteLogEntry('${g}',${e.ts})">删除</span></div>
+    ${cfg.fields.filter(f=>e[f.k]).map(f=>`<div class="li-row"><span class="li-k">${f.label}</span><span>${esc(e[f.k])}</span></div>`).join('')||'<div class="li-row mut">（空）</div>'}
+  </div>`).join('');
+}
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+/* ====== 分享给朋友 ====== */
+async function shareApp(){
+  const url='https://matprep-ten.vercel.app';
+  if(navigator.share){
+    try{ await navigator.share({title:'MATPREP · 在家练柔术', text:'我在用的 BJJ 在家自主训练手册，你也来：', url}); return; }
+    catch(e){ return; } // 用户取消
+  }
+  try{ await navigator.clipboard.writeText(url); }catch(e){}
+  showQR(url);
+}
+function showQR(url){
+  const qr='https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data='+encodeURIComponent(url);
+  const m=document.createElement('div'); m.className='qr-modal'; m.onclick=()=>m.remove();
+  m.innerHTML=`<div class="qr-box" onclick="event.stopPropagation()">
+    <div class="qr-t">分享给朋友</div><img src="${qr}" width="200" height="200" alt="QR">
+    <div class="qr-url mono">${url}</div>
+    <div class="qr-hint">链接已复制 · 扫码或打开链接即可用<br>各自进度独立，互不影响</div>
+    <button class="qr-x" onclick="this.closest('.qr-modal').remove()">关闭</button></div>`;
+  document.body.appendChild(m);
+}
+
+/* ============ TRAINING MODE ============ */
+let TR=null; // {di, flat:[{move,stepIdx}], pos}
+function buildTrainerForDay(di){
+  // 一天的练习 = 6 个详解动作循环填满 d.n 个 drill；这里按动作×步骤展开成跟练流
+  const n=PLAN.days[di].n;
+  const seq=[];
+  for(let i=0;i<n;i++){ seq.push(PLAN.moves[i%PLAN.moves.length]); }
+  const flat=[];
+  seq.forEach((m,mi)=>{ m.steps.forEach((s,si)=>flat.push({m,si,s,mi,first:si===0,last:si===m.steps.length-1})); });
+  return {di, seq, flat, pos:0};
+}
+function startToday(){
+  // 今天 = 当前周第一个未完成的非休息日，否则周一
+  let di=PLAN.days.findIndex((d,i)=>d.type!=='rest'&&dayDone(S.week,i)<d.n);
+  if(di<0)di=0;
+  startDay(di);
+}
+function startDay(di){
+  if(PLAN.days[di].type==='rest')return;
+  TR=buildTrainerForDay(di);
+  $('trDay').textContent=`第${S.week}周 · ${PLAN.days[di].d} · ${PLAN.days[di].n}练`;
+  $('trVoice').checked=S.opts.voice; $('trAuto').checked=S.opts.auto;
+  $('trainer').classList.add('open');
+  renderTrStep();
+}
+function closeTrainer(){ stopTimer(); window.speechSynthesis&&speechSynthesis.cancel(); $('trainer').classList.remove('open'); renderAll(); }
+function renderTrStep(){
+  const f=TR.flat[TR.pos];
+  $('trIdx').textContent=`动作 ${f.mi+1}/${TR.seq.length} · 步骤 ${f.si+1}/${f.m.steps.length}`;
+  $('trName').textContent=f.m.name;
+  $('trEn').textContent=f.m.en;
+  $('trFig').innerHTML=FIGS[f.m.fig]||'';
+  $('trStep').innerHTML=`<span class="sp-n">${f.si+1}</span>${f.s}`;
+  $('trPrev').style.visibility=TR.pos===0?'hidden':'visible';
+  $('trNext').textContent = TR.pos===TR.flat.length-1?'完成 ✓':'下一步 ▶';
+  if(S.opts.voice) speak(`${f.first?f.m.name+'。':''}${f.s}`);
+  if(S.opts.auto) startTimer(30); else stopTimer();
+}
+function trStepMove(dir){
+  stopTimer();
+  if(dir>0 && TR.pos===TR.flat.length-1){ // 完成一天
+    // 标记该天所有 drill 完成
+    for(let si=0;si<PLAN.days[TR.di].n;si++)S.done[drillKey(S.week,TR.di,si)]=true;
+    S.dayLog[todayStr()]=true;   // 记自然日 → streak
+    save(); speak('训练完成，做得好。'); closeTrainer(); return;
+  }
+  TR.pos=Math.max(0,Math.min(TR.flat.length-1,TR.pos+dir));
+  renderTrStep();
+}
+let timer=null,tleft=0;
+function startTimer(sec){
+  stopTimer(); tleft=sec; const el=$('trTimer'); el.style.display='block'; el.classList.remove('rest');
+  el.textContent=tleft+'s';
+  timer=setInterval(()=>{ tleft--; el.textContent=tleft+'s';
+    if(tleft<=3&&tleft>0)speak(String(tleft));
+    if(tleft<=0){ stopTimer(); speak('换'); trStepMove(1);} },1000);
+}
+function stopTimer(){ if(timer)clearInterval(timer); timer=null; $('trTimer').style.display='none'; }
+function speak(t){
+  if(!window.speechSynthesis)return;
+  try{ speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t); u.lang='zh-CN'; u.rate=1.02; speechSynthesis.speak(u);
+  }catch(e){}
+}
+function saveOpts(){ S.opts={voice:$('trVoice').checked,auto:$('trAuto').checked}; save();
+  if(!S.opts.auto)stopTimer(); else if(TR)startTimer(30); }
+
+/* 手势 / 键盘 */
+$('trainer').addEventListener('click',e=>{
+  if(e.target.closest('.tr-ctl')||e.target.closest('.tr-toggle')||e.target.closest('.tr-x'))return;
+  const x=e.clientX, mid=window.innerWidth/2;
+  trStepMove(x>mid?1:-1);
+});
+document.addEventListener('keydown',e=>{
+  if(!$('trainer').classList.contains('open'))return;
+  if(e.code==='Space'||e.code==='ArrowRight'){e.preventDefault();trStepMove(1);}
+  if(e.code==='ArrowLeft'){e.preventDefault();trStepMove(-1);}
+  if(e.code==='Escape')closeTrainer();
+});
+
+/* ============ PRINT CARD ============ */
+function buildPrintCard(){
+  const w=S.week, day=PLAN.days.find((d,i)=>d.type!=='rest'); // 范本：第一练习日
+  const moves=PLAN.moves;
+  $('printRoot').innerHTML=`
+    <div class="pc-h"><div class="pt">MATPREP · 第${w}周训练卡</div>
+      <div class="ps">练前热身5分钟 · 全程低强度 · 看肚脐别磕头</div></div>
+    <div class="pc-grid">
+      ${moves.map((m,i)=>`<div class="pc-m"><h4>${i+1}. ${m.name} <span class="pen">${m.en}</span></h4>
+        <ol>${m.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`).join('')}
+    </div>
+    <div class="pc-safe"><b>⚠ 安全红线</b>
+      <ul>${PLAN.safety.map(([h])=>`<li>${h}</li>`).join('')}</ul></div>
+    <div class="pc-foot">体能穿插：${PLAN.conditioning.map(c=>c.name).join(' · ')}　|　第8周 → 道馆体验课</div>`;
+}
+window.addEventListener('beforeprint',buildPrintCard);
+
+/* ============ MISC ============ */
+function resetAll(){ if(confirm('清空所有进度？')){S={};localStorage.removeItem(LS);S=load();
+  S.week=1;S.done={};S.chk={};S.state=null;S.wt=65;S.opts={voice:true,auto:false};S.dayLog={};
+  S.journal={daily:[],weekly:[],monthly:[]};S.curLog='daily';save();renderAll();} }
+$('wt').addEventListener('input',e=>{ const v=+e.target.value||65; S.wt=v; save(); renderFuel(); });
+
+/* ====== 习惯系统 ====== */
+function practicedSet(){ return new Set(Object.keys(S.dayLog).filter(k=>S.dayLog[k])); }
+function toggleDayDone(di,ev){
+  if(ev)ev.stopPropagation();           // 不触发进训练模式
+  const w=S.week, full=dayDone(w,di)>=PLAN.days[di].n;
+  for(let si=0;si<PLAN.days[di].n;si++){
+    if(full) delete S.done[drillKey(w,di,si)]; else S.done[drillKey(w,di,si)]=true;
+  }
+  if(!full) S.dayLog[todayStr()]=true;   // 勾上=今天练了；取消不动 dayLog（可能别天练过）
+  save(); renderProgress();renderWeeks();renderDays();renderStreak();renderHeatmap();
+}
+function renderStreak(){
+  const n=computeStreak(practicedSet(), todayStr());
+  const today = !!S.dayLog[todayStr()];
+  $('streak').innerHTML = `<span class="fire">🔥</span><span class="num">${n}</span>`+
+    `<span class="lbl">连续天数<br><b class="${today?'yes':'no'}">${today?'今天 ✓ 已练':'今天还没练'}</b></span>`;
+}
+function renderHeatmap(){
+  // 8 周 × 6 练习日（周日休息不入格）；完成一个计划训练日点亮
+  const drillDays = PLAN.days.map((d,di)=>({d,di})).filter(x=>x.d.type!=='rest');
+  let html='';
+  for(let w=1;w<=PLAN.weeks;w++){
+    html+=`<div class="heat-row"><span class="hw">W${w}</span>`;
+    drillDays.forEach(({d,di})=>{
+      const full=dayDone(w,di)>=d.n && d.n>0;
+      html+=`<span class="cell ${full?'on':''}" title="W${w} ${d.d}"></span>`;
+    });
+    html+=`</div>`;
+  }
+  $('heat').innerHTML=html;
+}
+
+function renderAll(){
+  $('wt').value=S.wt;
+  renderProgress();renderWeeks();renderStreak();renderHeatmap();
+  renderChecklist();renderFuel();renderDays();
+  renderMoves();renderCond();renderAnimals();renderSafety();
+}
+renderAll();
+</script>
+</body>
+</html>
