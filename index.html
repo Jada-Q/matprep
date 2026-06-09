@@ -493,32 +493,32 @@ const PLAN = {
   fuel:{ protein:[1.8,2.2], carb:[4,6], kcalPerKg:[33,38], waterBase:2.5 },
   // 6 个带图详解动作
   moves:[
-    {name:'虾行', en:'hip escape / shrimp', fig:'shrimp', steps:[
+    {name:'虾行', en:'hip escape / shrimp', fig:'shrimp', vid:'c-uspbddRs0', steps:[
       '仰卧屈膝，双脚踩地，双手护在胸前。',
       '一只脚用力蹬地，同时把髋向斜后方推开。',
       '身体顺势侧转成"虾"形——肩留原地、髋远离。',
       '换边重复，沿垫子一路移动。']},
-    {name:'桥 / upa', en:'bridge / upa', fig:'bridge', steps:[
+    {name:'桥 / upa', en:'bridge / upa', fig:'bridge', vid:'01Fe3N1vZMY', steps:[
       '仰卧，双脚跟尽量贴近臀部、踩实地面。',
       '双脚发力，把髋向天花板顶高（肩与脚撑地）。',
       '顶到最高时向一侧翻转，护住该侧手臂。',
       '力量全来自髋和腿，肩颈不要发力。']},
-    {name:'技术起身', en:'technical stand up', fig:'standup', steps:[
+    {name:'技术起身', en:'technical stand up', fig:'standup', vid:'YAFqZsIV9ns', steps:[
       '坐姿，一只手在身后撑地，同侧腿伸直。',
       '另一腿屈膝踩地，另一只手举在脸前防护。',
       '撑地手与前脚同时发力，把髋抬离地面。',
       '后腿从身下穿过收回、顺势站起，全程护脸。']},
-    {name:'受身 · 坐姿拍倒', en:'back breakfall', fig:'breakfall', steps:[
+    {name:'受身 · 坐姿拍倒', en:'back breakfall', fig:'breakfall', vid:'wCWONgAjQzo', steps:[
       '坐在垫上，下巴贴胸（永远看肚脐，别后仰磕头）。',
       '身体向后倒，背成圆弧着地。',
       '着地瞬间双臂张开、手掌用力拍垫泄力。',
       '熟练后再升跪姿→蹲姿，别一上来站着摔。']},
-    {name:'扑防', en:'sprawl', fig:'sprawl', steps:[
+    {name:'扑防', en:'sprawl', fig:'sprawl', vid:'NmqVOswRpW4', steps:[
       '站立预备，重心略前。',
       '对手抱腿瞬间，髋猛地向下沉。',
       '双腿同时向后蹬直，上身压在对方背上。',
       '双手撑地控制，再恢复站姿。']},
-    {name:'转身脱困', en:'sit-out', fig:'sitout', steps:[
+    {name:'转身脱困', en:'sit-out', fig:'sitout', vid:'y5nAO-yYnQU', steps:[
       '四足支撑（俯撑），背保持水平。',
       '一只手撑稳、另一腿从身下快速穿过。',
       '顺势转髋、面朝上坐出，脱离压制。',
@@ -714,7 +714,7 @@ function renderMoves(){
       <h3>${m.name}</h3><div class="en">${m.en}</div>
       <div class="fig">${FIGS[m.fig]||''}</div>
       <ol class="steps">${m.steps.map(s=>`<li><span class="n"></span><span>${s}</span></li>`).join('')}</ol>
-      <a class="vbtn" href="${ydoc('BJJ '+m.en+' solo drill')}" target="_blank" rel="noopener">▷ 看示范视频</a>
+      <a class="vbtn" href="${m.vid?('https://www.youtube.com/watch?v='+m.vid):ydoc('BJJ '+m.en+' solo drill')}" target="_blank" rel="noopener">▷ ${m.vid?'看示范视频':'搜示范视频'}</a>
     </div>`).join('');
 }
 function renderCond(){
