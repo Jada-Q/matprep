@@ -567,6 +567,16 @@ const PLAN = {
     {d:'周六', type:'one',  label:'单练', n:3},
     {d:'周日', type:'rest', label:'休息', n:0},
   ],
+  // 每天不同主题的动作清单（名称须与各动作库精确一致；长度=对应 day.n）
+  schedule: [
+    ['受身 · 坐姿拍倒','虾行','桥 / upa','死虫','鸟狗','平板','技术起身','熊爬'],          // 周一·受身+核心
+    ['虾行','反向虾','桥 / upa','转身脱困'],                                              // 周二·地面移动
+    ['死虫','鸟狗','侧平板','臀桥'],                                                      // 周三·核心护腰
+    ['技术起身','扑防','转身脱困','桥 / upa','熊爬','蟹走','青蛙跳','受身 · 坐姿拍倒'],     // 周四·技术+体能
+    ['虾行','桥 / upa','受身 · 坐姿拍倒','动作串联流','颈部等长'],                          // 周五·综合
+    ['熊爬','鳄鱼爬','猩猩走'],                                                           // 周六·趣味动物
+    [],                                                                                  // 周日休息
+  ],
   checklist:[
     {t:'睡够（≥6 小时）', d:'缺觉做受身/跳跃易崴脚磕头'},
     {t:'没喝酒 / 不宿醉', d:'酒精脱水、影响平衡和恢复'},
@@ -948,13 +958,30 @@ function showQR(url){
 
 /* ============ TRAINING MODE ============ */
 let TR=null; // {di, flat:[{move,stepIdx}], pos}
+// 动作注册表：按名称查到任意动作（详解动作带 steps，其余只有 focus 提示）
+let _DRILLS=null;
+function drillRegistry(){
+  if(_DRILLS) return _DRILLS;
+  _DRILLS={};
+  PLAN.moves.forEach(m=>_DRILLS[m.name]=m);                         // 带 steps + 图
+  [...PLAN.conditioning,...PLAN.animalMoves,...PLAN.coreMoves].forEach(d=>{
+    if(!_DRILLS[d.name]) _DRILLS[d.name]=d;                          // 简单动作（focus 当提示）
+  });
+  return _DRILLS;
+}
 function buildTrainerForDay(di){
-  // 一天的练习 = 6 个详解动作循环填满 d.n 个 drill；这里按动作×步骤展开成跟练流
-  const n=PLAN.days[di].n;
-  const seq=[];
-  for(let i=0;i<n;i++){ seq.push(PLAN.moves[i%PLAN.moves.length]); }
+  // 一天 = schedule[di] 里那串各不相同的动作
+  const reg=drillRegistry();
+  const names=(PLAN.schedule[di]||[]);
+  const seq=names.map(nm=>reg[nm]).filter(Boolean);
   const flat=[];
-  seq.forEach((m,mi)=>{ m.steps.forEach((s,si)=>flat.push({m,si,s,mi,first:si===0,last:si===m.steps.length-1})); });
+  seq.forEach((m,mi)=>{
+    if(m.steps&&m.steps.length){                                    // 详解动作：逐步骤跟练
+      m.steps.forEach((s,si)=>flat.push({m,si,s,mi,first:si===0,last:si===m.steps.length-1}));
+    }else{                                                          // 简单动作：一屏 = focus 提示 + 计时
+      flat.push({m,si:0,s:(m.focus||('做 '+m.name)),mi,first:true,last:true});
+    }
+  });
   return {di, seq, flat, pos:0};
 }
 function startToday(){
@@ -974,10 +1001,11 @@ function startDay(di){
 function closeTrainer(){ stopTimer(); window.speechSynthesis&&speechSynthesis.cancel(); $('trainer').classList.remove('open'); renderAll(); }
 function renderTrStep(){
   const f=TR.flat[TR.pos];
-  $('trIdx').textContent=`动作 ${f.mi+1}/${TR.seq.length} · 步骤 ${f.si+1}/${f.m.steps.length}`;
+  const totSteps=(f.m.steps&&f.m.steps.length)?f.m.steps.length:1;
+  $('trIdx').textContent=`动作 ${f.mi+1}/${TR.seq.length} · 步骤 ${f.si+1}/${totSteps}`;
   $('trName').textContent=f.m.name;
   $('trEn').textContent=f.m.en;
-  $('trFig').innerHTML=FIGS[f.m.fig]||'';
+  $('trFig').innerHTML=FIGS[f.m.fig] || (f.m.emoji?`<div style="font-size:90px;text-align:center;padding:24px 0">${f.m.emoji}</div>`:simpleFig());
   $('trStep').innerHTML=`<span class="sp-n">${f.si+1}</span>${f.s}`;
   $('trPrev').style.visibility=TR.pos===0?'hidden':'visible';
   $('trNext').textContent = TR.pos===TR.flat.length-1?'完成 ✓':'下一步 ▶';
