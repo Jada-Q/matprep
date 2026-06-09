@@ -930,10 +930,10 @@ async function shareApp(){
   const url='https://matprep-ten.vercel.app';
   if(navigator.share){
     try{ await navigator.share({title:'MATPREP · 在家练柔术', text:'我在用的 BJJ 在家自主训练手册，你也来：', url}); return; }
-    catch(e){ return; } // 用户取消
+    catch(e){ if(e && e.name==='AbortError') return; } // 只有用户主动取消才静默；其它失败→降级
   }
   try{ await navigator.clipboard.writeText(url); }catch(e){}
-  showQR(url);
+  showQR(url);   // 保证：原生分享不可用/失败时，一定弹出二维码+复制
 }
 function showQR(url){
   const qr='https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data='+encodeURIComponent(url);
