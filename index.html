@@ -54,7 +54,8 @@
   /* phases / weeks */
   .phases{display:flex;gap:14px;color:var(--mut);font-size:11px;margin:14px 0 8px;flex-wrap:wrap}
   .phases b{color:var(--mut2);font-weight:600}
-  .weeks{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .weeks{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
   .wk{min-width:42px;height:42px;border-radius:10px;background:var(--card);border:1px solid var(--line);
     color:var(--mut2);font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
   .wk.active{background:var(--orange);color:#fff;border-color:var(--orange)}
@@ -105,11 +106,33 @@
   .tag.one{background:#1f2a31;color:#5fa3c4}
   .tag.rest{background:#262a23;color:var(--mut)}
   .day .df{color:var(--mut);font-family:var(--mono);font-size:13px;cursor:pointer}
-  .day .dr{display:flex;align-items:center;gap:10px}
+  .day .dr{display:flex;align-items:center;gap:8px;padding-left:12px;border-left:1px solid var(--line)}
   .day.fulldone{border-color:#3d5a2e;background:#18200f}
-  .dcheck{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--card2);
-    color:var(--mut);font-size:15px;font-weight:800;cursor:pointer;flex:0 0 auto;line-height:1}
+  .dcheck{width:40px;height:40px;border-radius:9px;border:1.5px solid var(--line);background:var(--card2);
+    color:var(--mut);font-size:17px;font-weight:800;cursor:pointer;flex:0 0 auto;line-height:1}
   .dcheck.on{background:var(--good);border-color:var(--good);color:#fff}
+
+  /* 首屏引导卡 */
+  .intro{background:linear-gradient(180deg,#241710,#1c1611);border:1px solid #4a2c1e;border-radius:14px;
+    padding:16px;margin-top:16px;text-align:center}
+  .intro-txt{font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .intro-txt b{color:var(--orange-soft)}
+  .intro-cta{margin-top:13px;background:var(--orange);color:#fff;border:0;border-radius:11px;
+    padding:13px 26px;font-size:15.5px;font-weight:700;cursor:pointer;width:100%}
+  .intro-sub{font-size:11.5px;color:var(--mut);margin-top:11px;line-height:1.55}
+  .intro-x{margin-top:10px;background:none;border:0;color:var(--mut);font-size:11.5px;cursor:pointer}
+  /* 安静的次级按钮（清空）*/
+  .btn-quiet{opacity:.55;font-size:11px;padding:6px 9px}
+  .btn-quiet:hover{opacity:1}
+  /* iOS 语音提示 */
+  .tr-ios{color:var(--amber);font-size:11px}
+  /* 完成 toast */
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:120;
+    background:var(--card);border:1px solid var(--good);border-radius:30px;padding:12px 18px;
+    display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:92vw}
+  .toast-msg{font-size:13.5px;color:var(--ink)}
+  .toast-go{background:var(--good);color:#fff;border:0;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;flex:0 0 auto}
+  .toast-x{background:none;border:0;color:var(--mut);font-size:18px;cursor:pointer;line-height:1}
 
   /* 习惯系统 */
   .habit{display:flex;gap:14px;align-items:center;margin-top:14px;background:var(--card);
@@ -272,7 +295,7 @@
     </div>
     <div class="topbtns">
       <button class="btn-ghost" onclick="shareApp()">分享</button>
-      <button class="btn-ghost" onclick="resetAll()">清空</button>
+      <button class="btn-ghost btn-quiet" onclick="resetAll()">清空</button>
     </div>
   </div>
 
@@ -282,6 +305,12 @@
   </div>
 
   <div id="viewTrain">
+  <div class="intro" id="intro" hidden>
+    <div class="intro-txt"><b>上垫前的准备工具</b> — 不替代道馆，招式实战要教练在场学。零基础从这开始 ↓</div>
+    <button class="intro-cta" onclick="startToday()">▶ 开始今天的训练</button>
+    <div class="intro-sub">不会做？每个动作有图鉴 + 视频。开练前先扫一眼底部「5 条安全红线」。</div>
+    <button class="intro-x" onclick="dismissIntro()">知道了，收起 ✕</button>
+  </div>
   <div class="prog">
     <div class="bars" id="bars"></div>
     <div class="prog-num"><div class="pct" id="pct">0%</div><div class="frac" id="frac">0 / 0 练</div></div>
@@ -383,7 +412,7 @@
   </div>
 </div>
 
-<button class="train-cta" onclick="startToday()">▶ 训练模式（跟练不碰屏）</button>
+<button class="train-cta" onclick="startToday()">▶ 开始今天的训练（跟练不碰屏）</button>
 
 <!-- 训练模式 -->
 <div class="trainer" id="trainer">
@@ -407,7 +436,8 @@
     <label><input type="checkbox" id="trVoice" checked onchange="saveOpts()"> 🔊 语音报动作</label>
     <label><input type="checkbox" id="trAuto" onchange="saveOpts()"> ⏱ 每步 30s 自动</label>
   </div>
-  <div class="tr-hint">空格 / 点屏右半 = 下一步 · 点屏左半 = 上一步</div>
+  <div class="tr-hint">空格 / 点屏右半 = 下一步 · 点屏左半 = 上一步<br>
+    <span class="tr-ios">🔊 iPhone 首次没声音？点一下「下一步」即可唤醒语音</span></div>
 </div>
 
 <!-- 打印卡 -->
@@ -585,6 +615,7 @@ S.opts = S.opts||{voice:true,auto:false};
 S.dayLog = S.dayLog||{};    // 'YYYY-MM-DD' -> true（自然日练了没，供 streak）
 S.journal = S.journal||{daily:[],weekly:[],monthly:[]};
 S.curLog = S.curLog||'daily';
+S.introHidden = S.introHidden||false;
 
 /* ============ RENDER ============ */
 const $=id=>document.getElementById(id);
@@ -600,7 +631,7 @@ function grandDone(){let c=0;for(let w=1;w<=PLAN.weeks;w++)c+=weekDone(w);return
 function renderProgress(){
   const tot=grandTotal(), done=grandDone(), pct=Math.round(done/tot*100);
   $('pct').textContent=pct+'%';
-  $('frac').textContent=`${done} / ${tot} 练`;
+  $('frac').textContent=`本周 ${weekDone(S.week)}/${totalDrillsPerWeek()} · 共 ${done}/${tot} 个动作`;
   $('bars').innerHTML = Array.from({length:8},(_,i)=>{
     const filled = weekDone(i+1)>=totalDrillsPerWeek() && totalDrillsPerWeek()>0;
     return `<div class="seg ${filled?'on':''}"></div>`;
@@ -765,6 +796,18 @@ function renderLogList(){
 function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 
 /* ====== 分享给朋友 ====== */
+/* ====== 首屏引导 + 完成 toast ====== */
+function renderIntro(){ $('intro').hidden = !!S.introHidden; }
+function dismissIntro(){ S.introHidden=true; save(); renderIntro(); }
+function showToast(msg, onGo){
+  const old=document.querySelector('.toast'); if(old)old.remove();
+  const t=document.createElement('div'); t.className='toast';
+  t.innerHTML=`<span class="toast-msg">${msg}</span><button class="toast-go">去记录</button><button class="toast-x">✕</button>`;
+  t.querySelector('.toast-go').onclick=()=>{ t.remove(); onGo&&onGo(); };
+  t.querySelector('.toast-x').onclick=()=>t.remove();
+  document.body.appendChild(t);
+  setTimeout(()=>{ if(t.isConnected)t.remove(); }, 8000);
+}
 async function shareApp(){
   const url='https://matprep-ten.vercel.app';
   if(navigator.share){
@@ -829,7 +872,8 @@ function trStepMove(dir){
     // 标记该天所有 drill 完成
     for(let si=0;si<PLAN.days[TR.di].n;si++)S.done[drillKey(S.week,TR.di,si)]=true;
     S.dayLog[todayStr()]=true;   // 记自然日 → streak
-    save(); speak('训练完成，做得好。'); closeTrainer(); return;
+    save(); speak('训练完成，做得好。'); closeTrainer();
+    showToast('✓ 今天训练完成！写两句感受 →', ()=>{ switchView('log'); switchLog('daily'); }); return;
   }
   TR.pos=Math.max(0,Math.min(TR.flat.length-1,TR.pos+dir));
   renderTrStep();
@@ -924,7 +968,7 @@ function renderAll(){
   $('wt').value=S.wt;
   renderProgress();renderWeeks();renderStreak();renderHeatmap();
   renderChecklist();renderFuel();renderDays();
-  renderMoves();renderCond();renderAnimals();renderCore();renderSafety();
+  renderMoves();renderCond();renderAnimals();renderCore();renderSafety();renderIntro();
 }
 renderAll();
 </script>
