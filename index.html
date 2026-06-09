@@ -54,8 +54,12 @@
   /* phases / weeks */
   .phases{display:flex;gap:14px;color:var(--mut);font-size:11px;margin:14px 0 8px;flex-wrap:wrap}
   .phases b{color:var(--mut2);font-weight:600}
-  .weeks{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;
-    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .weeks-wrap{position:relative}
+  .weeks{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .weeks::-webkit-scrollbar{display:none}
+  .weeks-fade{position:absolute;right:0;top:0;height:42px;width:48px;display:flex;align-items:center;
+    justify-content:flex-end;padding-right:5px;color:var(--orange-soft);font-size:26px;font-weight:800;
+    cursor:pointer;transition:opacity .2s;background:linear-gradient(90deg,transparent,#161a14 62%)}
   .wk{min-width:42px;height:42px;border-radius:10px;background:var(--card);border:1px solid var(--line);
     color:var(--mut2);font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
   .wk.active{background:var(--orange);color:#fff;border-color:var(--orange)}
@@ -321,7 +325,10 @@
     <span><b>阶段二</b> · 加载 (W3–6)</span>
     <span><b>阶段三</b> · 模拟 (W7–8)</span>
   </div>
-  <div class="weeks" id="weeks"></div>
+  <div class="weeks-wrap">
+    <div class="weeks" id="weeks" onscroll="updateWeeksFade()"></div>
+    <div class="weeks-fade" id="weeksFade" onclick="$('weeks').scrollBy({left:170,behavior:'smooth'})">›</div>
+  </div>
 
   <div class="habit">
     <div class="streak" id="streak"></div>
@@ -644,6 +651,13 @@ function renderWeeks(){
   }).join('');
   $('curWeek').textContent=S.week;
   $('weekTitle').textContent=`第 ${S.week} 周训练`;
+  updateWeeksFade();
+}
+function updateWeeksFade(){
+  const el=$('weeks'), fade=$('weeksFade'); if(!el||!fade)return;
+  const more = el.scrollWidth - el.clientWidth - el.scrollLeft > 8;  // 右边还有没滚到的
+  fade.style.opacity = more ? '1' : '0';
+  fade.style.pointerEvents = more ? 'auto' : 'none';
 }
 function setWeek(w){S.week=w;save();renderWeeks();renderDays();}
 
