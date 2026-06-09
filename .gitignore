@@ -1,2 +1,4 @@
 .vercel
 qr.png
+.env.production.local
+.env*.local
