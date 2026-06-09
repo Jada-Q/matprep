@@ -138,6 +138,8 @@
   .animal:first-child{margin-top:0}
   .ahead{display:flex;align-items:center;gap:11px}
   .aemoji{font-size:24px;flex:0 0 auto}
+  .cidx{width:26px;height:26px;border-radius:7px;background:#2a2f27;color:var(--orange-soft);
+    font-family:var(--mono);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
   .ameta{flex:1;min-width:0}
   .afocus{color:var(--mut);font-size:12.5px;margin-top:7px;padding-left:35px}
   .vbtn-sm{color:var(--orange-soft);border:1px solid #4a2c1e;background:#241710;border-radius:7px;
@@ -350,10 +352,17 @@
   </div>
   <div class="card" id="animals"></div>
 
+  <!-- 核心稳定 / 护腰 -->
+  <h2 class="sec">核心稳定 · 护腰 <span class="hint">脊柱中立，腰友好</span></h2>
+  <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
+    这些是"练核心又护腰"的动作——全程脊柱保持中立、不反复弯腰扭腰，物理治疗常用。当热身或单独核心日，每个 30-40 秒 / 8-12 次。
+  </div>
+  <div class="card" id="core"></div>
+
   <!-- 注意事项 -->
   <h2 class="sec">注意事项 · 必读补充</h2>
   <div class="safety">
-    <div class="sh">⚠ 4 条安全红线 · 别跳过</div>
+    <div class="sh">⚠ 5 条安全红线 · 别跳过</div>
     <ol id="safetyList"></ol>
   </div>
 
@@ -497,11 +506,20 @@ const PLAN = {
     {name:'青蛙跳', en:'frog jump', focus:'爆发+落地缓冲，膝盖外展', emoji:'🐸'},
     {name:'尺蠖', en:'inchworm', focus:'后链拉伸+核心，手脚交替走', emoji:'🐛'},
   ],
+  // 核心稳定 · 护腰（脊柱中立、抗动，腰友好）
+  coreMoves:[
+    {name:'死虫', en:'dead bug', focus:'仰卧，对侧手脚伸出，下背全程贴地不拱起'},
+    {name:'鸟狗', en:'bird dog', focus:'四足，对侧手脚伸直，背保持水平稳住别晃'},
+    {name:'平板', en:'plank', focus:'前臂撑地成一条直线，核心收紧、别塌腰翘臀'},
+    {name:'侧平板', en:'side plank', focus:'侧撑，髋顶高，身体侧面成一条直线'},
+    {name:'臀桥', en:'glute bridge', focus:'仰卧屈膝，臀发力顶髋，肩到膝一条线'},
+  ],
   safety:[
     ['颈部只做等长。','手掌抵住头各方向轻推、头不动，各 10 秒×3。不负重、不做颈桥(摔跤桥)——0 基础做颈桥极易拉伤颈椎，这是自练最高发的伤。'],
     ['受身严格渐进。','坐姿拍倒 → 跪姿后倒 → 蹲/站，每级练熟再升。永远在垫子上，护好后脑。第三阶段才碰站姿摔。'],
     ['每次必热身 5 分钟。','冷启动做虾行/受身最容易拉伤。先动态转髋转肩、慢爬行热身。'],
     ['频率 > 强度。','宁可每天到位，别一天猛练受伤停一周。任何关节有刺痛立刻停该动作。'],
+    ['腰椎中立，不硬桥。','护腰核心走死虫/鸟狗/平板（脊柱中立、对抗动作）。避开反复弯腰扭腰、负重过伸、硬顶腰桥。腰有旧伤先问理疗师。'],
   ],
   spirit:'数据存在本机浏览器(localStorage)，换设备不同步。本计划仅为上垫前的体能与动作准备，不能替代道馆真人指导；招式实战必须在教练在场下学。第 8 周结束 = 去道馆上第一节体验课（东京 Carpe Diem / Bonsai 等多对不会日语者友好，首课多为免费体验）。',
 };
@@ -666,6 +684,15 @@ function renderAnimals(){
         <div class="ameta"><div class="cn">${a.name}</div><div class="ce">${a.en}</div></div>
         <a class="vbtn-sm" href="${ydoc('animal movement '+a.en+' tutorial')}" target="_blank" rel="noopener">▷ 视频</a></div>
       <div class="afocus">${a.focus}</div>
+    </div>`).join('');
+}
+function renderCore(){
+  $('core').innerHTML=PLAN.coreMoves.map((c,i)=>`
+    <div class="animal">
+      <div class="ahead"><span class="cidx">${i+1}</span>
+        <div class="ameta"><div class="cn">${c.name}</div><div class="ce">${c.en}</div></div>
+        <a class="vbtn-sm" href="${ydoc(c.en+' exercise tutorial')}" target="_blank" rel="noopener">▷ 视频</a></div>
+      <div class="afocus">${c.focus}</div>
     </div>`).join('');
 }
 function renderSafety(){
@@ -897,7 +924,7 @@ function renderAll(){
   $('wt').value=S.wt;
   renderProgress();renderWeeks();renderStreak();renderHeatmap();
   renderChecklist();renderFuel();renderDays();
-  renderMoves();renderCond();renderAnimals();renderSafety();
+  renderMoves();renderCond();renderAnimals();renderCore();renderSafety();
 }
 renderAll();
 </script>
