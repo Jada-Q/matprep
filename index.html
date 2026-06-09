@@ -442,8 +442,8 @@
   <!-- 本周训练 -->
   <h2 class="sec foldable" data-tab="path" data-fk="week"><span id="weekTitle">本周训练</span></h2>
   <div class="card" style="padding:14px 16px;border-color:#4a2c1e;background:#1c1410">
-    <span style="color:var(--orange-soft);font-weight:700">第 <span id="curWeek">1</span> 周</span>
-    <span class="mut" style="font-size:13px"> · 全程低强度，只求动作做对。每个动作慢做，有条件像自查姿势。</span>
+    <span style="color:var(--orange-soft);font-weight:700">第 <span id="curWeek">1</span> 周 · 阶段·<span id="phaseName">唤醒</span></span>
+    <span class="mut" id="weekDesc" style="font-size:13px"> · 全程低强度，打基础。</span>
   </div>
   <div id="days"></div>
 
@@ -579,15 +579,39 @@ const PLAN = {
     {d:'周六', type:'one',  label:'单练', n:3},
     {d:'周日', type:'rest', label:'休息', n:0},
   ],
-  // 每天不同主题的动作清单（名称须与各动作库精确一致；长度=对应 day.n）
-  schedule: [
-    ['受身 · 坐姿拍倒','虾行','桥 / upa','死虫','鸟狗','平板','技术起身','熊爬'],          // 周一·受身+核心
-    ['虾行','反向虾','桥 / upa','转身脱困'],                                              // 周二·地面移动
-    ['死虫','鸟狗','侧平板','臀桥'],                                                      // 周三·核心护腰
-    ['技术起身','扑防','转身脱困','桥 / upa','熊爬','蟹走','青蛙跳','受身 · 坐姿拍倒'],     // 周四·技术+体能
-    ['虾行','桥 / upa','受身 · 坐姿拍倒','动作串联流','颈部等长'],                          // 周五·综合
-    ['熊爬','鳄鱼爬','猩猩走'],                                                           // 周六·趣味动物
-    [],                                                                                  // 周日休息
+  // 8 周渐进：3 阶段各一套每日清单（阶段内的周重复以巩固）。名称须与动作库精确一致；长度=对应 day.n
+  // 阶段映射：W1-2→唤醒(0) / W3-6→加载(1) / W7-8→模拟(2)
+  schedulePhases: [
+    // ===== 唤醒 W1-2 · 打基础：安全受身 + 核心稳定 + 基础移动，最简单 =====
+    [
+      ['受身 · 坐姿拍倒','虾行','桥 / upa','死虫','鸟狗','平板','技术起身','熊爬'],
+      ['虾行','桥 / upa','死虫','鸟狗'],
+      ['受身 · 坐姿拍倒','死虫','平板','臀桥'],
+      ['虾行','桥 / upa','技术起身','受身 · 坐姿拍倒','死虫','鸟狗','平板','熊爬'],
+      ['虾行','桥 / upa','受身 · 坐姿拍倒','死虫','颈部等长'],
+      ['熊爬','死虫','鸟狗'],
+      [],
+    ],
+    // ===== 加载 W3-6 · 加量上技术：扑防/转身脱困 + 进阶核心 + 更多动物 =====
+    [
+      ['受身 · 坐姿拍倒','虾行','反向虾','桥 / upa','技术起身','转身脱困','侧平板','蟹走'],
+      ['虾行','反向虾','转身脱困','鳄鱼爬'],
+      ['死虫','鸟狗','侧平板','臀桥'],
+      ['技术起身','扑防','转身脱困','桥 / upa','熊爬','蟹走','青蛙跳','受身 · 坐姿拍倒'],
+      ['虾行','反向虾','桥 / upa','动作串联流','颈部等长'],
+      ['熊爬','鳄鱼爬','猩猩走'],
+      [],
+    ],
+    // ===== 模拟 W7-8 · 串联整合：flows/后滚翻/抓握，接近上道馆 =====
+    [
+      ['受身 · 坐姿拍倒','后滚翻','虾行','反向虾','转身脱困','技术起身','扑防','动作串联流'],
+      ['动作串联流','虾行','反向虾','后滚翻'],
+      ['侧平板','臀桥','死悬垂 / 毛巾悬挂','毛巾抓握'],
+      ['技术起身','扑防','转身脱困','后滚翻','蟹走','鳄鱼爬','青蛙跳','尺蠖'],
+      ['动作串联流','受身 · 坐姿拍倒','转身脱困','颈部等长','死悬垂 / 毛巾悬挂'],
+      ['鳄鱼爬','猩猩走','尺蠖'],
+      [],
+    ],
   ],
   checklist:[
     {t:'睡够（≥6 小时）', d:'缺觉做受身/跳跃易崴脚磕头'},
@@ -761,6 +785,9 @@ function renderWeeks(){
   }).join('');
   $('curWeek').textContent=S.week;
   $('weekTitle').textContent=`第 ${S.week} 周训练`;
+  const pi=PHASE_INFO[phaseForWeek(S.week)];
+  if($('phaseName'))$('phaseName').textContent=pi.name;
+  if($('weekDesc'))$('weekDesc').textContent=' · '+pi.desc;
   updateWeeksFade();
 }
 function updateWeeksFade(){
@@ -1023,10 +1050,18 @@ function drillRegistry(){
   });
   return _DRILLS;
 }
+// 周 → 阶段：W1-2 唤醒(0) / W3-6 加载(1) / W7-8 模拟(2)
+function phaseForWeek(w){ return w<=2?0 : (w<=6?1:2); }
+const PHASE_INFO=[
+  {name:'唤醒',  desc:'全程低强度，打基础——安全受身 + 核心稳定 + 基础移动，动作慢做、求做对。'},
+  {name:'加载',  desc:'强度上升，加量上技术——扑防/转身脱困 + 进阶核心 + 更多动物爬行。'},
+  {name:'模拟',  desc:'串联整合——动作流 + 后滚翻 + 抓握耐力，为上道馆体验课做准备。'},
+];
 function buildTrainerForDay(di){
-  // 一天 = schedule[di] 里那串各不相同的动作
+  // 一天 = 当前周所属阶段的 schedule[di]
   const reg=drillRegistry();
-  const names=(PLAN.schedule[di]||[]);
+  const ph=phaseForWeek(S.week);
+  const names=((PLAN.schedulePhases[ph]||[])[di]||[]);
   const seq=names.map(nm=>reg[nm]).filter(Boolean);
   const flat=[];
   seq.forEach((m,mi)=>{
