@@ -64,6 +64,11 @@
   .bnav a svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
   .bnav a.on{color:var(--orange)}
 
+  /* 顶栏分享图标 */
+  .share-ic{background:transparent;border:1px solid var(--line);border-radius:9px;color:var(--mut2);
+    width:40px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:0 0 auto}
+  .share-ic:hover,.share-ic:active{border-color:var(--orange);color:var(--orange)}
+  .share-ic svg{width:18px;height:18px}
   /* The Self 分享区 */
   .share-big{width:100%;background:var(--orange);color:#1d100c;border:0;border-radius:11px;
     padding:15px;font-size:15px;font-weight:700;cursor:pointer}
@@ -349,10 +354,12 @@
       <div class="brand">MAT<b>PREP</b></div>
       <div class="sub mono">上垫前 · 8周自主训练</div>
     </div>
-    <div class="topbtns">
-      <button class="btn-ghost" onclick="shareApp()">分享</button>
-      <button class="btn-ghost btn-quiet" onclick="resetAll()">清空</button>
-    </div>
+    <button class="share-ic" onclick="shareApp()" title="分享给朋友" aria-label="分享">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
+        <line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/><line x1="15.7" y1="6.3" x2="8.3" y2="10.7"/>
+      </svg>
+    </button>
   </div>
 
   <div class="hero" id="hero">
@@ -461,10 +468,9 @@
   </div>
 
   <!-- 精神内核 -->
-  <h2 class="sec" data-tab="self">分享 · 设置</h2>
+  <h2 class="sec" data-tab="self">设置 · 数据</h2>
   <div class="card">
-    <button class="share-big" onclick="shareApp()">📤 分享给朋友</button>
-    <div class="share-hint">朋友打开链接即可用 · 各自进度独立，互不影响</div>
+    <div class="share-hint" style="margin-top:0;margin-bottom:14px">分享给朋友：点右上角 <span style="color:var(--orange-soft)">↗ 图标</span> · 朋友打开链接即可用，各自进度独立</div>
     <button class="share-reset" onclick="resetAll()">清空所有进度</button>
   </div>
 
@@ -847,7 +853,7 @@ function switchTab(t){
   ['path','scroll','journey','self'].forEach(x=>{ $('v-'+x).hidden = x!==t; });
   document.querySelectorAll('.bnav a').forEach(a=>a.classList.toggle('on',a.dataset.t===t));
   const H=HERO[t]; $('heroLbl').textContent=H.lbl; $('heroH').innerHTML=H.h; $('heroZh').textContent=H.zh;
-  const cta=document.querySelector('.train-cta'); if(cta)cta.style.display=(t==='path')?'':'none';
+  const cta=document.querySelector('.train-cta'); if(cta)cta.style.display=(t==='path'&&S.introHidden)?'':'none';
   if(t==='journey') switchLog(S.curLog||'daily');
   window.scrollTo(0,0);
 }
@@ -909,7 +915,8 @@ function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','
 /* ====== 分享给朋友 ====== */
 /* ====== 首屏引导 + 完成 toast ====== */
 function renderIntro(){ $('intro').hidden = !!S.introHidden; }
-function dismissIntro(){ S.introHidden=true; save(); renderIntro(); }
+function dismissIntro(){ S.introHidden=true; save(); renderIntro();
+  const cta=document.querySelector('.train-cta'); if(cta)cta.style.display=(!$('v-path').hidden)?'':'none'; }
 function showToast(msg, onGo){
   const old=document.querySelector('.toast'); if(old)old.remove();
   const t=document.createElement('div'); t.className='toast';
@@ -1102,7 +1109,7 @@ function initFolds(){
     h.after(body);
     const arrow=document.createElement('span'); arrow.className='fold-arrow'; arrow.textContent='▸';
     h.appendChild(arrow);
-    const open = (key in S.folds) ? S.folds[key] : false;   // 默认收起
+    const open = (key in S.folds) ? S.folds[key] : true;    // 分 tab 后默认展开（仍可手动收起）
     setFold(h,body,arrow,open);
     h.addEventListener('click',()=>{
       const willOpen=body.hasAttribute('hidden');
