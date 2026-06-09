@@ -1002,7 +1002,7 @@ function closeTrainer(){ stopTimer(); window.speechSynthesis&&speechSynthesis.ca
 function renderTrStep(){
   const f=TR.flat[TR.pos];
   const totSteps=(f.m.steps&&f.m.steps.length)?f.m.steps.length:1;
-  $('trIdx').textContent=`动作 ${f.mi+1}/${TR.seq.length} · 步骤 ${f.si+1}/${totSteps}`;
+  $('trIdx').textContent=`第 ${f.mi+1} 个动作（共 ${TR.seq.length} 个）· 这个动作第 ${f.si+1}/${totSteps} 步`;
   $('trName').textContent=f.m.name;
   $('trEn').textContent=f.m.en;
   $('trFig').innerHTML=FIGS[f.m.fig] || (f.m.emoji?`<div style="font-size:90px;text-align:center;padding:24px 0">${f.m.emoji}</div>`:simpleFig());
