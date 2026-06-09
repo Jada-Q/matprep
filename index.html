@@ -116,6 +116,17 @@
     color:var(--mut);font-size:17px;font-weight:800;cursor:pointer;flex:0 0 auto;line-height:1}
   .dcheck.on{background:var(--good);border-color:var(--good);color:#fff}
 
+  /* 区块折叠 */
+  .foldable{cursor:pointer;-webkit-user-select:none;user-select:none}
+  .fold-arrow{color:var(--mut);font-size:13px;margin-left:8px;flex:0 0 auto;transition:transform .15s}
+  .foldable.collapsed .hint{display:none}
+  .fold-body[hidden]{display:none}
+  /* 回到顶部 */
+  .totop{position:fixed;left:16px;bottom:20px;z-index:45;width:44px;height:44px;border-radius:50%;
+    background:var(--card2);border:1px solid var(--line);color:var(--ink);font-size:20px;cursor:pointer;
+    opacity:0;pointer-events:none;transition:opacity .2s;box-shadow:0 4px 16px rgba(0,0,0,.45)}
+  .totop.show{opacity:.92;pointer-events:auto}
+
   /* 首屏引导卡 */
   .intro{background:linear-gradient(180deg,#241710,#1c1611);border:1px solid #4a2c1e;border-radius:14px;
     padding:16px;margin-top:16px;text-align:center}
@@ -346,7 +357,7 @@
   </div>
 
   <!-- 供能 -->
-  <h2 class="sec">供能 · 按体重算 <span class="hint">↑大强度=多吃，不是少吃</span></h2>
+  <h2 class="sec foldable" data-fk="fuel">供能 · 按体重算 <span class="hint">↑大强度=多吃，不是少吃</span></h2>
   <div class="card">
     <div class="wt">体重 <input id="wt" type="number" min="35" max="160" value="65"> kg
       <span class="mut mono" style="margin-left:auto;font-size:12px">训练日目标 ↓</span></div>
@@ -371,25 +382,25 @@
   <div id="days"></div>
 
   <!-- 动作图鉴 -->
-  <h2 class="sec">动作图鉴 · 图 + 视频 <span class="hint">不会先看这里 ↓</span></h2>
+  <h2 class="sec foldable" data-fk="moves">动作图鉴 · 图 + 视频 <span class="hint">不会先看这里 ↓</span></h2>
   <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px">
     简笔图看动作 <b style="color:var(--orange-soft)">方位</b>，按编号步骤练。动作是动态的，第一次务必"看示范视频"确认细节——别照着火柴人瞎练。
   </div>
   <div id="moves"></div>
 
   <!-- 体能 / 串联 -->
-  <h2 class="sec">体能 · 串联日范本 <span class="hint">穿插在训练日</span></h2>
+  <h2 class="sec foldable" data-fk="cond">体能 · 串联日范本 <span class="hint">穿插在训练日</span></h2>
   <div class="card" id="cond"></div>
 
   <!-- 动物爬行 -->
-  <h2 class="sec">动物爬行 · 趣味移动 <span class="hint">热身/体能，非招式</span></h2>
+  <h2 class="sec foldable" data-fk="animal">动物爬行 · 趣味移动 <span class="hint">热身/体能，非招式</span></h2>
   <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
     枯燥练不下去时换这个。动物爬行是 BJJ 道馆常用热身——练地面移动、协调和体能，趣味高、受伤低。每个爬 1-2 趟（约 8-10 米）。
   </div>
   <div class="card" id="animals"></div>
 
   <!-- 核心稳定 / 护腰 -->
-  <h2 class="sec">核心稳定 · 护腰 <span class="hint">脊柱中立，腰友好</span></h2>
+  <h2 class="sec foldable" data-fk="core">核心稳定 · 护腰 <span class="hint">脊柱中立，腰友好</span></h2>
   <div class="card" style="border-color:#33402a;background:#1b2415;color:var(--mut2);padding:12px 16px;font-size:12.5px;margin-top:14px">
     这些是"练核心又护腰"的动作——全程脊柱保持中立、不反复弯腰扭腰，物理治疗常用。当热身或单独核心日，每个 30-40 秒 / 8-12 次。
   </div>
@@ -403,7 +414,7 @@
   </div>
 
   <!-- 精神内核 -->
-  <h2 class="sec">精神内核 · 它究竟是什么</h2>
+  <h2 class="sec foldable" data-fk="spirit">精神内核 · 它究竟是什么</h2>
   <div class="spirit" id="spirit"></div>
   </div><!-- /viewTrain -->
 
@@ -420,6 +431,7 @@
 </div>
 
 <button class="train-cta" onclick="startToday()">▶ 开始今天的训练（跟练不碰屏）</button>
+<button class="totop" id="totop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到顶部">↑</button>
 
 <!-- 训练模式 -->
 <div class="trainer" id="trainer">
@@ -623,6 +635,7 @@ S.dayLog = S.dayLog||{};    // 'YYYY-MM-DD' -> true（自然日练了没，供 s
 S.journal = S.journal||{daily:[],weekly:[],monthly:[]};
 S.curLog = S.curLog||'daily';
 S.introHidden = S.introHidden||false;
+S.folds = S.folds||{};      // 区块折叠状态 key -> 是否展开
 
 /* ============ RENDER ============ */
 const $=id=>document.getElementById(id);
@@ -985,6 +998,40 @@ function renderAll(){
   renderMoves();renderCond();renderAnimals();renderCore();renderSafety();renderIntro();
 }
 renderAll();
+
+/* ====== 区块折叠（参考区默认收起，缩短页面）====== */
+function setFold(h,body,arrow,open){
+  if(open){ body.removeAttribute('hidden'); arrow.textContent='▾'; h.classList.remove('collapsed'); }
+  else{ body.setAttribute('hidden',''); arrow.textContent='▸'; h.classList.add('collapsed'); }
+}
+function initFolds(){
+  document.querySelectorAll('#viewTrain h2.foldable').forEach(h=>{
+    if(h.dataset.folded) return;            // 只包裹一次
+    h.dataset.folded='1';
+    const key=h.dataset.fk;
+    const body=document.createElement('div'); body.className='fold-body';
+    let n=h.nextElementSibling;
+    while(n && !(n.tagName==='H2' && n.classList.contains('sec'))){
+      const next=n.nextElementSibling; body.appendChild(n); n=next;
+    }
+    h.after(body);
+    const arrow=document.createElement('span'); arrow.className='fold-arrow'; arrow.textContent='▸';
+    h.appendChild(arrow);
+    const open = (key in S.folds) ? S.folds[key] : false;   // 默认收起
+    setFold(h,body,arrow,open);
+    h.addEventListener('click',()=>{
+      const willOpen=body.hasAttribute('hidden');
+      setFold(h,body,arrow,willOpen);
+      S.folds[key]=willOpen; save();
+    });
+  });
+}
+initFolds();
+
+/* ====== 回到顶部按钮 ====== */
+window.addEventListener('scroll',()=>{
+  const b=document.getElementById('totop'); if(b)b.classList.toggle('show', window.scrollY>360);
+});
 </script>
 </body>
 </html>
