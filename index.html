@@ -175,6 +175,29 @@
     opacity:0;pointer-events:none;transition:opacity .2s;box-shadow:0 4px 16px rgba(0,0,0,.45)}
   .totop.show{opacity:.92;pointer-events:auto}
 
+  /* 今日卡（#2 五秒开练）*/
+  .tc{background:linear-gradient(165deg,#2a1812,#1f130d);border:1px solid #4a2c1e;border-radius:16px;
+    padding:16px;margin-top:14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+  .tc-top{font-size:10px;letter-spacing:.28em;color:var(--orange);text-transform:uppercase}
+  .tc-moves{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 2px}
+  .tc-chip{background:#33201708;background-color:#332017;border:1px solid #4a2c1e;color:var(--ink);
+    font-size:12px;padding:4px 10px;border-radius:14px}
+  .tc-go{display:block;width:100%;margin-top:14px;background:var(--orange);color:#1d100c;border:0;
+    border-radius:13px;padding:17px;font-size:17px;font-weight:800;cursor:pointer;
+    box-shadow:0 6px 20px rgba(255,107,53,.3)}
+  .tc-go:active{transform:scale(.985)}
+  .tc-check{margin-top:11px;font-size:12px;color:var(--mut);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tc-check.ok{color:var(--good)}
+  .tc-quick{background:#241710;border:1px solid #4a2c1e;color:var(--orange-soft);border-radius:8px;
+    padding:7px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .tc-quick-note{font-size:10.5px;color:var(--mut2);line-height:1.5}
+  .tc-quick-note a{color:var(--orange-soft);cursor:pointer;text-decoration:underline}
+  .tc-donemsg{font-size:17px;font-weight:800;margin-top:10px}
+  /* 掉落卡（#3）*/
+  .drop{margin-top:13px;background:#241710;border:1px dashed #5a3a26;border-radius:12px;padding:12px 14px}
+  .drop-tag{font-size:11px;color:var(--amber);font-weight:700;letter-spacing:.05em}
+  .drop-txt{font-size:13.5px;color:var(--ink);margin-top:6px;line-height:1.65}
+
   /* 首屏引导卡 */
   .intro{background:linear-gradient(180deg,#241710,#1c1611);border:1px solid #4a2c1e;border-radius:14px;
     padding:16px;margin-top:16px;text-align:center}
@@ -386,9 +409,10 @@
   <div id="v-self" class="view" hidden></div>
 
   <div id="viewTrain" hidden>
-  <div class="intro" id="intro" data-tab="path" hidden>
+  <div class="today" id="today" data-tab="path"></div>
+
+  <div class="intro" id="intro" hidden>
     <div class="intro-txt"><b>上垫前的准备工具</b> — 不替代道馆，招式实战要教练在场学。零基础从这开始 ↓</div>
-    <button class="intro-cta" onclick="startToday()">▶ 开始今天的训练</button>
     <div class="intro-sub">不会做？每个动作有图鉴 + 视频。开练前先扫一眼底部「5 条安全红线」。</div>
     <button class="intro-x" onclick="dismissIntro()">知道了，收起 ✕</button>
   </div>
@@ -502,7 +526,6 @@
   </div>
 </div>
 
-<button class="train-cta" onclick="startToday()">▶ 开始今天的训练（跟练不碰屏）</button>
 <button class="totop" id="totop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到顶部">↑</button>
 
 <!-- 训练模式 -->
@@ -756,6 +779,7 @@ S.dayLog = S.dayLog||{};    // 'YYYY-MM-DD' -> true（自然日练了没，供 s
 S.journal = S.journal||{daily:[],weekly:[],monthly:[]};
 S.curLog = S.curLog||'daily';
 S.introHidden = S.introHidden||false;
+S.lastDrop = S.lastDrop||null;   // {date, idx} 今日掉落
 S.folds = S.folds||{};      // 区块折叠状态 key -> 是否展开
 
 /* ============ RENDER ============ */
@@ -796,7 +820,7 @@ function updateWeeksFade(){
   fade.style.opacity = more ? '1' : '0';
   fade.style.pointerEvents = more ? 'auto' : 'none';
 }
-function setWeek(w){S.week=w;save();renderWeeks();renderDays();}
+function setWeek(w){S.week=w;save();renderWeeks();renderDays();renderTodayCard();}
 
 function renderChecklist(){
   $('checklist').innerHTML=PLAN.checklist.map((c,i)=>`
@@ -808,7 +832,7 @@ function renderChecklist(){
     `<div class="state ${S.state===i?'on':''}" onclick="setState(${i})">${s}</div>`).join('');
   updateChkNote();
 }
-function toggleChk(i){S.chk[i]=!S.chk[i];save();renderChecklist();}
+function toggleChk(i){S.chk[i]=!S.chk[i];save();renderChecklist();renderTodayCard();}
 function resetChecklist(){S.chk={};save();renderChecklist();}
 function setState(i){S.state=S.state===i?null:i;save();renderChecklist();}
 function updateChkNote(){
@@ -976,14 +1000,23 @@ function showToast(msg, onGo){
   setTimeout(()=>{ if(t.isConnected)t.remove(); }, 8000);
 }
 
+function awardDrop(){
+  if(!(S.lastDrop && S.lastDrop.date===todayStr())){
+    S.lastDrop={date:todayStr(), idx:Math.floor(Math.random()*DROPS.length)};
+    save();
+  }
+  renderTodayCard(); renderStreak&&renderStreak(); renderHeatmap&&renderHeatmap();
+}
+
 /* ====== 完成庆祝：屏幕中心烟花 ====== */
 function celebrate(){
+  awardDrop();                                          // #3 掉落（同日不重抽）
   document.getElementById('celebrate')?.remove();
   const ov=document.createElement('div'); ov.className='celebrate'; ov.id='celebrate';
   ov.innerHTML=`<canvas id="fxCanvas"></canvas>
     <div class="celebrate-msg">
       <div class="celebrate-big">🎉 训练完成！</div>
-      <div class="celebrate-sub">今天做得好 · 坚持住</div>
+      <div class="celebrate-sub">今天做得好 · 回首页看今日掉落 🎁</div>
     </div>`;
   document.body.appendChild(ov);                       // 透明、不盖暗页面、不拦点击
   runFireworks(document.getElementById('fxCanvas'));
@@ -1073,11 +1106,87 @@ function buildTrainerForDay(di){
   });
   return {di, seq, flat, pos:0};
 }
+function todayDi(){
+  // 今天 = 当前周第一个未完成的非休息日；全完成返回 -1
+  return PLAN.days.findIndex((d,i)=>d.type!=='rest'&&dayDone(S.week,i)<d.n);
+}
 function startToday(){
-  // 今天 = 当前周第一个未完成的非休息日，否则周一
-  let di=PLAN.days.findIndex((d,i)=>d.type!=='rest'&&dayDone(S.week,i)<d.n);
-  if(di<0)di=0;
+  let di=todayDi(); if(di<0)di=0;
   startDay(di);
+}
+
+/* ====== #3 完成掉落内容池（30 条；BJJ 公开常识/圈内谚语/练习贴士，不假托具体名人）====== */
+const DROPS=[
+ {t:'冷知识', x:'BJJ 的源头是日本柔术：前田光世把它带到巴西，格雷西家族再发展成今天的巴西柔术。'},
+ {t:'冷知识', x:'BJJ 的核心理念之一：以杠杆和位置弥补力量差距——小个子也能控制大个子。'},
+ {t:'冷知识', x:'"Position before submission"（先位置后降服）是 BJJ 最常被引用的原则。'},
+ {t:'冷知识', x:'BJJ 腰带从白带开始，到黑带通常要常年训练——它以升带慢著称。'},
+ {t:'冷知识', x:'柔术服叫 Gi，不穿道服的训练叫 No-Gi，两者抓握规则完全不同。'},
+ {t:'冷知识', x:'"Tap"（拍击认输）是 BJJ 安全文化的基石——先学会输，才能一直练下去。'},
+ {t:'冷知识', x:'Rolling（实战滚动）是 BJJ 的对练叫法——像下棋，每一步都有应对。'},
+ {t:'冷知识', x:'你练的虾行（hip escape）是 BJJ 出现频率最高的逃脱动作，没有之一。'},
+ {t:'冷知识', x:'BJJ 是少数体重不同也能同场训练的格斗项目——技术能真实跨越体型。'},
+ {t:'冷知识', x:'Guard（防守式）是 BJJ 独有思想：躺在下面也可能是进攻方。'},
+ {t:'谚语', x:'圈内常说：黑带只是从不放弃的白带。'},
+ {t:'谚语', x:'垫子不会说谎——你练没练，rolling 时全知道。'},
+ {t:'谚语', x:'今天被压制的次数，就是明天逃脱的素材。'},
+ {t:'谚语', x:'慢就是稳，稳就是快——动作做对比做快重要。'},
+ {t:'谚语', x:'不是你输给了对手，是你的虾行还欠火候。'},
+ {t:'谚语', x:'呼吸是第一个技术：会喘气的人才能撑过第三分钟。'},
+ {t:'谚语', x:'白带的任务只有一个：活着留下来继续练。'},
+ {t:'谚语', x:'最强的人不是不被压制，而是被压制时不慌。'},
+ {t:'谚语', x:'每个动作练一千次，它才开始属于你。'},
+ {t:'谚语', x:'上垫的那天你已经赢了大多数没来的人。'},
+ {t:'贴士', x:'桥（upa）发力全在髋和脚跟——肩颈感觉累就是做错了。'},
+ {t:'贴士', x:'受身永远下巴贴胸看肚脐——这个习惯能保你后脑一辈子。'},
+ {t:'贴士', x:'虾行的关键是肩留原地、髋推远——只挪屁股不算虾行。'},
+ {t:'贴士', x:'死虫做对的标志：下背全程压着地面起不来。'},
+ {t:'贴士', x:'熊爬背要平——想象背上放杯水不能洒。'},
+ {t:'贴士', x:'技术起身的手永远护在脸前——实战里那是对方的拳路。'},
+ {t:'贴士', x:'累的时候降速不停下——动作变形比少做两个更伤。'},
+ {t:'贴士', x:'练完 24 小时内补蛋白 + 睡够，恢复才是变强的时刻。'},
+ {t:'贴士', x:'指甲剪短不只是礼貌——上垫后那是真实的安全规则。'},
+ {t:'贴士', x:'第 8 周走进道馆那天，告诉教练你是零基础——他们最喜欢这样的学生。'},
+];
+
+/* ====== #2 今日卡：打开→开练 ≤5 秒 ====== */
+function precheckAllDone(){ return PLAN.checklist.every((_,i)=>S.chk[i]); }
+function quickCheckAll(){
+  PLAN.checklist.forEach((_,i)=>S.chk[i]=true);
+  if(S.state===null)S.state=0;
+  save(); renderChecklist(); renderTodayCard();
+}
+function renderTodayCard(){
+  const el=$('today'); if(!el)return;
+  const di=todayDi();
+  const doneToday = S.lastDrop && S.lastDrop.date===todayStr();
+  // 全周完成 或 今天已练完 → 完成态 + 掉落
+  if(doneToday){
+    const d=DROPS[S.lastDrop.idx]||DROPS[0];
+    el.innerHTML=`<div class="tc tc-done">
+      <div class="tc-top mono">TODAY · ${todayStr()}</div>
+      <div class="tc-donemsg">✅ 今天已训练 · 连续 ${computeStreak(practicedSet(),todayStr())} 天</div>
+      <div class="drop"><span class="drop-tag">🎁 今日掉落 · ${d.t}</span><div class="drop-txt">${d.x}</div></div>
+    </div>`;
+    return;
+  }
+  if(di<0){
+    el.innerHTML=`<div class="tc"><div class="tc-top mono">WEEK ${S.week} · COMPLETE</div>
+      <div class="tc-donemsg">🏁 本周全部完成！切下一周继续</div></div>`;
+    return;
+  }
+  const day=PLAN.days[di];
+  const names=(PLAN.schedulePhases[phaseForWeek(S.week)]||[])[di]||[];
+  const ok=precheckAllDone();
+  el.innerHTML=`<div class="tc">
+    <div class="tc-top mono">TODAY · W${S.week} ${day.d} · ${day.label} ${day.n} 个动作</div>
+    <div class="tc-moves">${names.map(n=>`<span class="tc-chip">${n}</span>`).join('')}</div>
+    <button class="tc-go" onclick="startDay(${di})">▶ 开练（约 15 分钟）</button>
+    <div class="tc-check ${ok?'ok':''}">
+      ${ok?'✓ 自检已确认':`<button class="tc-quick" onclick="quickCheckAll()">✓ 一键自检确认</button>
+      <span class="tc-quick-note">= 睡够·没酒·无烧·关节OK·不空腹·指甲短 · <a onclick="document.querySelector('h2[data-fk=precheck]')?.scrollIntoView({behavior:'smooth'})">有状况?</a></span>`}
+    </div>
+  </div>`;
 }
 function startDay(di){
   if(PLAN.days[di].type==='rest')return;
@@ -1164,7 +1273,7 @@ window.addEventListener('beforeprint',buildPrintCard);
 /* ============ MISC ============ */
 function resetAll(){ if(confirm('清空所有进度？')){S={};localStorage.removeItem(LS);S=load();
   S.week=1;S.done={};S.chk={};S.state=null;S.wt=65;S.opts={voice:true,auto:false};S.dayLog={};
-  S.journal={daily:[],weekly:[],monthly:[]};S.curLog='daily';save();renderAll();} }
+  S.journal={daily:[],weekly:[],monthly:[]};S.curLog='daily';S.lastDrop=null;save();renderAll();} }
 $('wt').addEventListener('input',e=>{ const v=+e.target.value||65; S.wt=v; save(); renderFuel(); });
 
 /* ====== 习惯系统 ====== */
@@ -1177,6 +1286,7 @@ function toggleDayDone(di,ev){
   }
   if(!full) S.dayLog[todayStr()]=true;   // 勾上=今天练了；取消不动 dayLog（可能别天练过）
   save(); renderProgress();renderWeeks();renderDays();renderStreak();renderHeatmap();
+  if(!full) awardDrop(); else renderTodayCard();   // 手动勾完也掉落
 }
 function renderStreak(){
   const n=computeStreak(practicedSet(), todayStr());
@@ -1203,7 +1313,7 @@ function renderAll(){
   $('wt').value=S.wt;
   renderProgress();renderWeeks();renderStreak();renderHeatmap();
   renderChecklist();renderFuel();renderDays();
-  renderMoves();renderCond();renderAnimals();renderCore();renderSafety();renderIntro();
+  renderMoves();renderCond();renderAnimals();renderCore();renderSafety();renderIntro();renderTodayCard();
 }
 renderAll();
 distributeTabs();          // 把区块分发进 4 个 tab 容器
