@@ -659,30 +659,30 @@ const PLAN = {
   ],
   // 7 个体能/串联（名+英+视频搜索）
   conditioning:[
-    {name:'反向虾', en:'reverse shrimp'},
-    {name:'动作串联流', en:'solo flow'},
-    {name:'后滚翻', en:'granby roll'},
-    {name:'熊爬', en:'bear crawl'},
-    {name:'颈部等长', en:'neck isometrics'},
-    {name:'死悬垂 / 毛巾悬挂', en:'dead hang'},
-    {name:'毛巾抓握', en:'towel grip'},
+    {name:'反向虾', vid:'xpGoJn-XJAc', en:'reverse shrimp'},
+    {name:'动作串联流', vid:'sm9L6H-Zo2c', en:'solo flow'},
+    {name:'后滚翻', vid:'exkwjkM0P7U', en:'granby roll'},
+    {name:'熊爬', vid:'lRolga8vTyc', en:'bear crawl'},
+    {name:'颈部等长', vid:'FWa5PwgCkyw', en:'neck isometrics'},
+    {name:'死悬垂 / 毛巾悬挂', vid:'2vspW4N4BMs', en:'dead hang'},
+    {name:'毛巾抓握', vid:'5XLaPAPeKAY', en:'towel grip'},
   ],
   // 动物爬行 · 趣味移动（真实 movement 动作，定位热身/体能，非招式）
   animalMoves:[
-    {name:'熊爬', en:'bear crawl', focus:'核心+肩，对侧手脚同步前进', emoji:'🐻'},
-    {name:'蟹走', en:'crab walk', focus:'后链、肩后侧，臀部离地走', emoji:'🦀'},
-    {name:'鳄鱼爬', en:'leopard / alligator crawl', focus:'贴地低姿，核心全程收紧', emoji:'🐊'},
-    {name:'猩猩走', en:'gorilla / ape walk', focus:'髋灵活，双手撑地侧向移', emoji:'🦍'},
-    {name:'青蛙跳', en:'frog jump', focus:'爆发+落地缓冲，膝盖外展', emoji:'🐸'},
-    {name:'尺蠖', en:'inchworm', focus:'后链拉伸+核心，手脚交替走', emoji:'🐛'},
+    {name:'熊爬', vid:'lRolga8vTyc', en:'bear crawl', focus:'核心+肩，对侧手脚同步前进', emoji:'🐻'},
+    {name:'蟹走', vid:'oNUJek2xixA', en:'crab walk', focus:'后链、肩后侧，臀部离地走', emoji:'🦀'},
+    {name:'鳄鱼爬', vid:'UuxAo3zaegU', en:'leopard / alligator crawl', focus:'贴地低姿，核心全程收紧', emoji:'🐊'},
+    {name:'猩猩走', vid:'PIqXNsxzMjc', en:'gorilla / ape walk', focus:'髋灵活，双手撑地侧向移', emoji:'🦍'},
+    {name:'青蛙跳', vid:'GvTeWVyJKNE', en:'frog jump', focus:'爆发+落地缓冲，膝盖外展', emoji:'🐸'},
+    {name:'尺蠖', vid:'ml3MdmCkwbQ', en:'inchworm', focus:'后链拉伸+核心，手脚交替走', emoji:'🐛'},
   ],
   // 核心稳定 · 护腰（脊柱中立、抗动，腰友好）
   coreMoves:[
-    {name:'死虫', en:'dead bug', focus:'仰卧，对侧手脚伸出，下背全程贴地不拱起'},
-    {name:'鸟狗', en:'bird dog', focus:'四足，对侧手脚伸直，背保持水平稳住别晃'},
-    {name:'平板', en:'plank', focus:'前臂撑地成一条直线，核心收紧、别塌腰翘臀'},
-    {name:'侧平板', en:'side plank', focus:'侧撑，髋顶高，身体侧面成一条直线'},
-    {name:'臀桥', en:'glute bridge', focus:'仰卧屈膝，臀发力顶髋，肩到膝一条线'},
+    {name:'死虫', vid:'bxn9FBrt4-A', en:'dead bug', focus:'仰卧，对侧手脚伸出，下背全程贴地不拱起'},
+    {name:'鸟狗', vid:'ZdAHe9_HeEw', en:'bird dog', focus:'四足，对侧手脚伸直，背保持水平稳住别晃'},
+    {name:'平板', vid:'A2b2EmIg0dA', en:'plank', focus:'前臂撑地成一条直线，核心收紧、别塌腰翘臀'},
+    {name:'侧平板', vid:'44ND4bOB-T0', en:'side plank', focus:'侧撑，髋顶高，身体侧面成一条直线'},
+    {name:'臀桥', vid:'wPM8icPu6H8', en:'glute bridge', focus:'仰卧屈膝，臀发力顶髋，肩到膝一条线'},
   ],
   safety:[
     ['颈部只做等长。','手掌抵住头各方向轻推、头不动，各 10 秒×3。不负重、不做颈桥(摔跤桥)——0 基础做颈桥极易拉伤颈椎，这是自练最高发的伤。'],
@@ -857,14 +857,14 @@ function renderMoves(){
 function renderCond(){
   $('cond').innerHTML=PLAN.conditioning.map(c=>`
     <div class="cond"><div><span class="cn">${c.name}</span><span class="ce">${c.en}</span></div>
-    <a href="${ydoc('BJJ '+c.en)}" target="_blank" rel="noopener">▷ 视频</a></div>`).join('');
+    <a href="${c.vid?('https://www.youtube.com/watch?v='+c.vid):ydoc('BJJ '+c.en)}" target="_blank" rel="noopener">▷ ${c.vid?'视频':'搜视频'}</a></div>`).join('');
 }
 function renderAnimals(){
   $('animals').innerHTML=PLAN.animalMoves.map(a=>`
     <div class="animal">
       <div class="ahead"><span class="aemoji">${a.emoji}</span>
         <div class="ameta"><div class="cn">${a.name}</div><div class="ce">${a.en}</div></div>
-        <a class="vbtn-sm" href="${ydoc('animal movement '+a.en+' tutorial')}" target="_blank" rel="noopener">▷ 视频</a></div>
+        <a class="vbtn-sm" href="${a.vid?('https://www.youtube.com/watch?v='+a.vid):ydoc('animal movement '+a.en+' tutorial')}" target="_blank" rel="noopener">▷ ${a.vid?'视频':'搜视频'}</a></div>
       <div class="afocus">${a.focus}</div>
     </div>`).join('');
 }
@@ -873,7 +873,7 @@ function renderCore(){
     <div class="animal">
       <div class="ahead"><span class="cidx">${i+1}</span>
         <div class="ameta"><div class="cn">${c.name}</div><div class="ce">${c.en}</div></div>
-        <a class="vbtn-sm" href="${ydoc(c.en+' exercise tutorial')}" target="_blank" rel="noopener">▷ 视频</a></div>
+        <a class="vbtn-sm" href="${c.vid?('https://www.youtube.com/watch?v='+c.vid):ydoc(c.en+' exercise tutorial')}" target="_blank" rel="noopener">▷ ${c.vid?'视频':'搜视频'}</a></div>
       <div class="afocus">${c.focus}</div>
     </div>`).join('');
 }
